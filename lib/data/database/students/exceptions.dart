@@ -1,0 +1,4 @@
+class CouldntAddStudentException implements Exception{}
+class CouldntReadStudentsException implements Exception{}
+class CouldntUpdateStudentException implements Exception{}
+class CouldntDeleteStudentException implements Exception{}
