@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants/Widgets/appBar.dart';
+
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({super.key});
 
@@ -10,8 +12,9 @@ class AnalyticsPage extends StatefulWidget {
 class _AnalyticsPageState extends State<AnalyticsPage> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body:  Center(child: Text("This is second page"),),
+    return  Scaffold(
+      appBar: MyAppBar(title: "Analytics"),
+      body:  const Center(child: Text("This is second page"),),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:attendance_app/pages/MorePage.dart';
 import 'package:attendance_app/pages/analytics_page.dart';
-import 'package:attendance_app/pages/mark_page.dart';
+import 'package:attendance_app/pages/attendance_page.dart';
 import 'package:flutter/material.dart';
 
 //see how to navigate to various pages 1,2,3,4

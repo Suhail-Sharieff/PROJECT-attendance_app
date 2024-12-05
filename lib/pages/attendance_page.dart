@@ -1,3 +1,4 @@
+import 'package:attendance_app/constants/Widgets/appBar.dart';
 import 'package:flutter/material.dart';
 
 class AttendancePage extends StatefulWidget {
@@ -10,8 +11,11 @@ class AttendancePage extends StatefulWidget {
 class _AttendancePageState extends State<AttendancePage> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("This is first page"),),
+    return Scaffold(
+      appBar: MyAppBar(title: "Mark Attendance"),
+      body: const Center(
+        child: Text("This is first page"),
+      ),
     );
   }
 }

@@ -1,0 +1,2 @@
+
+const  MyTextFamily='Inter';
