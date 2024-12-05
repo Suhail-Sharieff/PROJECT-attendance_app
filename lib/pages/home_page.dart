@@ -3,9 +3,6 @@ import 'package:attendance_app/pages/analytics_page.dart';
 import 'package:attendance_app/pages/attendance_page.dart';
 import 'package:flutter/material.dart';
 
-//see how to navigate to various pages 1,2,3,4
-
-//this is a nav bar for apps that is visisble at bottom, for web designs se NavigationRail instaed of Navigation bar
 
 
 

@@ -1,4 +1,3 @@
-//page3
 import 'package:attendance_app/constants/Widgets/appBar.dart';
 import 'package:flutter/material.dart';
 

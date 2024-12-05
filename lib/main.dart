@@ -1,7 +1,8 @@
 import 'package:attendance_app/pages/home_page.dart';
-import 'package:attendance_app/routes/routes_names.dart';
 import 'package:attendance_app/splash_screen.dart';
 import 'package:flutter/material.dart';
+
+import 'constants/routes/routes_names.dart';
 
 void main() {
   runApp(const MyApp());
