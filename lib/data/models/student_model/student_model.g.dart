@@ -11,10 +11,6 @@ _$StudentImpl _$$StudentImplFromJson(Map<String, dynamic> json) =>
       roll: (json['roll'] as num?)?.toInt() ?? -1,
       name: json['name'] as String? ?? 'no name',
       nOfClassesAttended: (json['nOfClassesAttended'] as num?)?.toInt() ?? 0,
-      marksMap: (json['marksMap'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry(k, (e as num).toInt()),
-          ) ??
-          const {},
     );
 
 Map<String, dynamic> _$$StudentImplToJson(_$StudentImpl instance) =>
@@ -22,5 +18,4 @@ Map<String, dynamic> _$$StudentImplToJson(_$StudentImpl instance) =>
       'roll': instance.roll,
       'name': instance.name,
       'nOfClassesAttended': instance.nOfClassesAttended,
-      'marksMap': instance.marksMap,
     };

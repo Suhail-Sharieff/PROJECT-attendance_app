@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:attendance_app/data/database/students/abstract_provider.dart';
@@ -21,7 +22,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   final rollCol = 'roll';
   final nameCol = 'name';
   final nOfClassesAttendedCol = 'nOfClassesAttended';
-  final marksMapCol = 'marksMap';
+  // final marksMapCol = 'marksMap';
 
   Future<Database> init_and_getDB() async {
     final storeDir = await getDatabasesPath();
@@ -32,7 +33,6 @@ class StudentDBProvider implements StudentDBAbstractProvider {
 	$rollCol	INTEGER NOT NULL UNIQUE,
 	$nameCol	TEXT,
 	$nOfClassesAttendedCol	INTEGER,
-	$marksMapCol	TEXT,
 	PRIMARY KEY($rollCol)
 );
           ''');
@@ -40,26 +40,24 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     return db;
   }
 
-  Future<Database>getDB()async{
+  Future<Database> getDB() async {
     myDB ??= await init_and_getDB();
     return myDB!;
   }
 
-
   @override
   Future<void> addStudent(Student newStudent) async {
     try {
-      final db=await getDB();
-      int id=await db.insert(tableName,
-      {
-        rollCol:newStudent.roll,
-        nameCol:newStudent.name,
-        nOfClassesAttendedCol:newStudent.nOfClassesAttended,
-        marksMapCol:newStudent.marksMap.toString()
-      }
-      );
+      final db = await getDB();
+      int id = await db.insert(tableName, {
+        rollCol: newStudent.roll,
+        nameCol: newStudent.name,
+        nOfClassesAttendedCol: newStudent.nOfClassesAttended,
+      });
       log("INSERTED");
     } catch (e) {
+      log("ERROR IN INSERTING");
+      log(e.toString());
       throw CouldntAddStudentException();
     }
   }
@@ -67,13 +65,14 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   @override
   Future<void> deleteStudent(Student student) async {
     try {
-      final db=await getDB();
-      await db.delete(tableName,
-      where: '$rollCol = ?',
-        whereArgs: [student.roll,]
-      );
+      final db = await getDB();
+      await db.delete(tableName, where: '$rollCol = ?', whereArgs: [
+        student.roll,
+      ]);
       log("DELETED");
     } catch (e) {
+      log("ERROR IN INSERTING");
+      log(e.toString());
       throw CouldntAddStudentException();
     }
   }
@@ -81,17 +80,19 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   @override
   Future<List<Student>> getAllStudents() async {
     try {
-      final db=await getDB();
-      List<Map<String,dynamic>>li=await db.query(tableName,
-      orderBy: 'roll',
-      );//this has list<{"id":1,"name":"xyz",..}>
-      return List.generate(
-        li.length,
-          (idx){
-            return Student.fromJson(li[idx]);
-          }
-      );
+      final db = await getDB();
+      List<Map<String, dynamic>> li = await db.query(
+        tableName,
+        orderBy: 'roll',
+      ); //this has list<{"id":1,"name":"xyz",..}>
+
+      log(li.toString());
+      return List.generate(li.length, (idx) {
+        return Student.fromJson(li[idx]);
+      });
     } catch (e) {
+      log("ERROR IN READING");
+      log(e.toString());
       throw CouldntReadStudentsException();
     }
   }
@@ -99,17 +100,16 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   @override
   Future<void> updateStudent(Student student) async {
     try {
-      final db=await getDB();
-      await db.update(tableName,
-      {
-        rollCol:student.roll,
-        nameCol:student.name,
-        nOfClassesAttendedCol:student.nOfClassesAttended,
-        marksMapCol:student.marksMap.toString(),
-      }
-      );
+      final db = await getDB();
+      await db.update(tableName, {
+        rollCol: student.roll,
+        nameCol: student.name,
+        nOfClassesAttendedCol: student.nOfClassesAttended,
+      });
       log("UPDATED");
     } catch (e) {
+      log("ERROR IN UPDATING");
+      log(e.toString());
       throw CouldntUpdateStudentException();
     }
   }
