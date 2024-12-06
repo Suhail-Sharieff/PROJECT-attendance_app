@@ -56,7 +56,7 @@ class _AttendancePageState extends State<AttendancePage> {
                   child: Text('Attendance'),
                 ),const PopupMenuItem<SortBy>(
                   value: SortBy.roll,
-                  child: Text('Roll'),
+                  child: Text('Date added'),
                 ),
               ];
             },
@@ -133,8 +133,8 @@ class _AttendancePageState extends State<AttendancePage> {
                                   nameContr.clear();
                                   await fetchData(); // Refresh data after adding
                                 } else {
-                                  await MyToast.showToast(
-                                      "Please enter valid name", Colors.red);
+                                  await MyToast.showErrorMsg(
+                                      "Please enter valid name",context);
                                 }
                               },
                               child: const Text("Add")),
@@ -154,7 +154,7 @@ class _AttendancePageState extends State<AttendancePage> {
               });
           setState(() {});
         },
-        child: const Icon(Icons.change_circle),
+        child: const Icon(Icons.add),
       ),
     );
   }

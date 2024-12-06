@@ -5,6 +5,7 @@ import 'package:attendance_app/data/database/students/service.dart';
 import 'package:flutter/material.dart';
 
 import '../data/models/student_model/student_model.dart';
+import 'attendance_page.dart';
 
 class StudentProfilePage extends StatefulWidget {
   final Student student;
@@ -133,8 +134,16 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                 await MyToast.showToast(
                                                     "Delete Success",
                                                     Colors.green);
-                                                Navigator.of(context).pop();
-                                                await Navigator.of(context).pushReplacementNamed(attendanceRoute);
+                                                Navigator.of(context)
+                                                    .pop(); // Close the bottom sheet or dialog
+                                                Navigator.of(context)
+                                                    .pushAndRemoveUntil(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const AttendancePage()),
+                                                  (Route<dynamic> route) =>
+                                                      false, // Remove all previous routes
+                                                );
                                               },
                                               child: const Text("Yes")),
                                           SizedBox.fromSize(
