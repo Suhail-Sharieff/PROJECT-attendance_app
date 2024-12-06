@@ -104,10 +104,12 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     try {
       final db = await getDB();
       await db.update(tableName, {
-        rollCol: student.roll,
         nameCol: student.name,
         nOfClassesAttendedCol: student.nOfClassesAttended,
-      });
+      },
+      where: '$rollCol=?',
+        whereArgs: [student.roll]
+      );
       log("UPDATED");
     } catch (e) {
       log("ERROR IN UPDATING");

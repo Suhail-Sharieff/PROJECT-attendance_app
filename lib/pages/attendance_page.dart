@@ -85,21 +85,48 @@ class _AttendancePageState extends State<AttendancePage> {
             itemBuilder: (_, idx) {
               Student st = li[idx];
               return ListTile(
-                title: Text('ID : ${idx + 1}: ${st.name}'),
-                subtitle:
-                Text('No of classes attended: ${st.nOfClassesAttended}'),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),  // Padding to make the list tile feel more spacious
+                leading: const Icon(Icons.person, color: Colors.blueAccent),
+                trailing: ElevatedButton(onPressed: ()async{
+                  await service.updateStudent(st.copyWith(roll:st.roll,name:st.name,nOfClassesAttended: st.nOfClassesAttended+1));
+                  setState(() {
+
+                  });
+                }, child: const Icon(Icons.co_present)),// Leading icon to represent the student
+                title: Text(
+                  'ID : ${idx+1}: ${st.name}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                subtitle: Text(
+                  'No of classes attended: ${st.nOfClassesAttended}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
+                ),
                 onTap: () async {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => StudentProfilePage(
-                        student: st,
-                        instance: service,
-                      )));
+                    builder: (_) => StudentProfilePage(
+                      student: st,
+                      service: service,
+                    ),
+                  ));
                 },
                 onLongPress: () async {
                   await service.deleteStudent(st);
                   setState(() {});
                 },
+                tileColor: Colors.grey[50],  // Add a background color to the tile
+                shape: RoundedRectangleBorder(  // Round the corners of the tile for a more modern look
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                // elevation: 2,  // Adding a subtle shadow to lift the tile visually
               );
+
             },
           );
         },
@@ -115,12 +142,15 @@ class _AttendancePageState extends State<AttendancePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextField(
+                        
                         decoration:
-                        const InputDecoration(border: OutlineInputBorder()),
+                        const InputDecoration(border: OutlineInputBorder(),label: Text("Enter name of student")),
                         autofocus: true,
                         controller: nameContr,
                       ),
+                      SizedBox.fromSize(size: const Size(23, 23),),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ElevatedButton(
                               onPressed: () async {
@@ -134,7 +164,7 @@ class _AttendancePageState extends State<AttendancePage> {
                                   await fetchData(); // Refresh data after adding
                                 } else {
                                   await MyToast.showErrorMsg(
-                                      "Please enter valid name",context);
+                                      "Please provide name of student !",context);
                                 }
                               },
                               child: const Text("Add")),

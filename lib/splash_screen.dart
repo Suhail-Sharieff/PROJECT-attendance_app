@@ -32,8 +32,8 @@ class _MySplashScreenState extends State<MySplashScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             GradientText(
-              'MUSTER',
-              style: const TextStyle(fontSize: 40),
+              'Shikshak Saathi',
+              style: const TextStyle(fontSize: 30),
               gradient: LinearGradient(colors: [
                 Colors.red,
                 Colors.blue.shade400,
