@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:attendance_app/constants/enums/sort_by.dart';
 import 'package:attendance_app/data/database/students/abstract_provider.dart';
 import 'package:attendance_app/data/database/students/exceptions.dart';
 import 'package:attendance_app/data/models/student_model/student_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -33,7 +35,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
 	$rollCol	INTEGER NOT NULL UNIQUE,
 	$nameCol	TEXT,
 	$nOfClassesAttendedCol	INTEGER,
-	PRIMARY KEY($rollCol)
+	PRIMARY KEY($rollCol AUTOINCREMENT) 
 );
           ''');
     });
@@ -50,7 +52,6 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     try {
       final db = await getDB();
       int id = await db.insert(tableName, {
-        rollCol: newStudent.roll,
         nameCol: newStudent.name,
         nOfClassesAttendedCol: newStudent.nOfClassesAttended,
       });
@@ -78,15 +79,16 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
   @override
-  Future<List<Student>> getAllStudents() async {
+  Future<List<Student>> getAllStudents(SortBy how) async {
     try {
       final db = await getDB();
+      log("sorting by : ${how.name}");
       List<Map<String, dynamic>> li = await db.query(
         tableName,
-        orderBy: 'roll',
+        orderBy: how.name,
       ); //this has list<{"id":1,"name":"xyz",..}>
 
-      log(li.toString());
+      // log(li.toString());
       return List.generate(li.length, (idx) {
         return Student.fromJson(li[idx]);
       });
@@ -113,4 +115,9 @@ class StudentDBProvider implements StudentDBAbstractProvider {
       throw CouldntUpdateStudentException();
     }
   }
+
+
+
+
+
 }

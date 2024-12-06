@@ -1,3 +1,6 @@
+import 'package:attendance_app/pages/MorePage.dart';
+import 'package:attendance_app/pages/analytics_page.dart';
+import 'package:attendance_app/pages/attendance_page.dart';
 import 'package:attendance_app/pages/home_page.dart';
 import 'package:attendance_app/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +19,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       routes: {
-        homeRoute:(context)=>const HomePage()
+        homeRoute:(context)=>const HomePage(),
+        attendanceRoute:(context)=>const AttendancePage(),
+        analyticsRoute:(context)=>const AnalyticsPage(),
+        moreRoute:(context)=>const MorePage()
       },
       theme: ThemeData(
 
