@@ -77,26 +77,30 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                   children: [
                                     ElevatedButton(
                                         onPressed: () async {
-                                          Student st = widget.student;
-                                          await instance.updateStudent(
-                                              st.copyWith(
-                                                  roll: st.roll,
-                                                  name: nameContr.text,
-                                                  nOfClassesAttended: int.parse(
-                                                      attendContr.text)));
-                                          await MyToast.showToast(
-                                              "Updated Successfully",
-                                              Colors.green);
-                                          Navigator.of(context)
-                                              .pop(); // Close the bottom sheet or dialog
-                                          Navigator.of(context)
-                                              .pushAndRemoveUntil(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                const AttendancePage()),
-                                                (Route<dynamic> route) =>
-                                            false, // Remove all previous routes
-                                          );
+                                          if(nameContr.text.isNotEmpty){
+                                            Student st = widget.student;
+                                            await instance.updateStudent(
+                                                st.copyWith(
+                                                    roll: st.roll,
+                                                    name: nameContr.text,
+                                                    nOfClassesAttended: int.parse(
+                                                        attendContr.text)));
+                                            await MyToast.showToast(
+                                                "Updated Successfully",
+                                                Colors.green);
+                                            Navigator.of(context)
+                                                .pop(); // Close the bottom sheet or dialog
+                                            Navigator.of(context)
+                                                .pushAndRemoveUntil(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                  const AttendancePage()),
+                                                  (Route<dynamic> route) =>
+                                              false, // Remove all previous routes
+                                            );
+                                          }else{
+                                            await MyToast.showErrorMsg("Name cannot be empty !", context);
+                                          }
                                         },
                                         child: const Text("Update")),
                                     ElevatedButton(
