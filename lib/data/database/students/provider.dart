@@ -37,7 +37,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     final dbPath = join(storeDir, dbName);
     final db = await openDatabase(dbPath, version: 1, onCreate: (db, version) {
       db.execute('''
-  CREATE TABLE $tableName (
+  CREATE TABLE IF NOT EXISTS $tableName(
 	$rollCol	INTEGER NOT NULL UNIQUE,
 	$nameCol	TEXT,
 	$nOfClassesAttendedCol	INTEGER,
@@ -48,10 +48,10 @@ class StudentDBProvider implements StudentDBAbstractProvider {
 
     await db.execute(
       ''' 
-        CREATE TABLE $attendanceTable(
+        CREATE TABLE IF NOT EXISTS $attendanceTable (
         $attendanceIDcol INTEGER PRIMARY KEY AUTOINCREMENT,
         $rollCol INTEGER,
-        $isPresentCol INTEGER
+        $isPresentCol INTEGER,
         $dateCol TEXT,
         FOREIGN KEY($rollCol) REFERENCES $tableName($rollCol)
         );
@@ -149,31 +149,72 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     try {
       final db = await getDB();
       final ddmmyyyy = getFormattedDate();
-      await db.insert(attendanceTable, {
-        rollCol: student.roll,
-        dateCol: ddmmyyyy,
-        isPresentCol:1,
-      });
-      log("MARKED PRESENT");
+
+      // Check if the student is already marked present for today's date
+      final existingRecord = await db.query(
+        attendanceTable,
+        where: '$rollCol = ? AND $dateCol = ?',
+        whereArgs: [student.roll, ddmmyyyy],
+      );
+
+      // If there's no existing record, insert the attendance record
+      if (existingRecord.isEmpty) {
+        await db.insert(attendanceTable, {
+          rollCol: student.roll,
+          dateCol: ddmmyyyy,
+          isPresentCol: 1, // Mark as present
+        });
+
+        // Update the student's attendance count
+        await db.update(
+          tableName,
+          {
+            nameCol: student.name,
+            nOfClassesAttendedCol: student.nOfClassesAttended + 1,
+          },
+          where: '$rollCol = ?',
+          whereArgs: [student.roll],
+        );
+
+        log("MARKED PRESENT");
+      } else {
+        log("Attendance already recorded for ${student.name} on $ddmmyyyy");
+      }
     } catch (e) {
       log(e.toString());
       throw CouldntMarkStudentException();
     }
   }
 
+
   @override
-  Future<void> getStudentAttendanceMapList(Student student) async{
+  Future<List<Map<String, dynamic>>>getStudentAttendanceMapList(Student student) async{
     try{
       final db = await getDB();
-      final li=await db.query(attendanceTable,
+      final List<Map<String,dynamic>>li=await db.query(attendanceTable,
       where: '$rollCol=?',
         whereArgs: [student.roll]
       );
+      log(li.toString());
+      return li;
     }catch(e){
       log(e.toString());
       throw CouldntGetStudentAttendanceList();
     }
   }
+
+  @override
+  Future<bool>isPresentToday(Student student)async{
+    try{
+      final li=await getStudentAttendanceMapList(student);
+      final map=li.where((each)=>each[isPresentCol]==1);
+      return map.isNotEmpty;
+    }catch(e){
+      log(e.toString());
+      throw Exception("COULD FETCH THAT STUDENT's DATA");
+    }
+  }
+
 
   @override
   Future<void> markStudentAbsent(Student student) async {
@@ -202,6 +243,14 @@ class StudentDBProvider implements StudentDBAbstractProvider {
           where: '$attendanceIDcol = ?', // Use the attendance ID to target the specific record
           whereArgs: [lastRecord[attendanceIDcol]], // Reference the ID of the last attendance record
         );
+        await db.update(
+            tableName,
+            {
+              nameCol: student.name,
+              nOfClassesAttendedCol: student.nOfClassesAttended-1,
+            },
+            where: '$rollCol=?',
+            whereArgs: [student.roll]);
         log("MARKED ABSENT");
       } else {
         log("No attendance record found for this student.");

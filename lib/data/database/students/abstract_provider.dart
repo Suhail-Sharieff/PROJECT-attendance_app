@@ -8,5 +8,6 @@ abstract class StudentDBAbstractProvider{
   Future<void>deleteStudent(Student student);
   Future<void>markStudentPresent(Student student);
   Future<void>markStudentAbsent(Student student);
-  Future<void>getStudentAttendanceMapList(Student student);
+  Future<List<Map<String,dynamic>>>getStudentAttendanceMapList(Student student);
+  Future<bool>isPresentToday(Student student);
 }

@@ -87,9 +87,12 @@ class _AttendancePageState extends State<AttendancePage> {
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),  // Padding to make the list tile feel more spacious
                 leading: const Icon(Icons.person, color: Colors.blueAccent),
-                trailing: Icon(Icons.circle_outlined),// Leading icon to represent the student
+                trailing: IconButton(onPressed: ()async{
+                  bool isPresentToday=await service.isPresentToday(st);
+                    log(isPresentToday.toString());
+                }, icon: Icon(Icons.check)),// Leading icon to represent the student
                 title: Text(
-                  'ID : ${idx+1}: ${st.name}',
+                  'ID : ${st.roll}: ${st.name}',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
