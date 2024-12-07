@@ -2,6 +2,7 @@ import 'package:attendance_app/Utils/percent_indicator.dart';
 import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/routes/routes_names.dart';
 import 'package:attendance_app/data/database/students/service.dart';
+import 'package:attendance_app/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
 import '../data/models/student_model/student_model.dart';
@@ -94,7 +95,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                 .pushAndRemoveUntil(
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                  const AttendancePage()),
+                                                  const HomePage()),
                                                   (Route<dynamic> route) =>
                                               false, // Remove all previous routes
                                             );
@@ -233,7 +234,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                       .pushAndRemoveUntil(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            const AttendancePage()),
+                                                            const HomePage()),
                                                     (Route<dynamic> route) =>
                                                         false, // Remove all previous routes
                                                   );

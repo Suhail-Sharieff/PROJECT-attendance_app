@@ -14,7 +14,6 @@ class Student with _$Student {
     @Default(-1) @JsonKey(name: 'roll') int roll,
     @Default('no name') @JsonKey(name: 'name') String name,
     @Default(0) @JsonKey(name: 'nOfClassesAttended') int nOfClassesAttended,
-    // @Default([{}]) @JsonKey(name: 'date_isPresent_Map') List<Map<String, int>> date_isPresent_Map,
   }) = _Student;
 
   factory Student.fromJson(Map<String, dynamic> json) =>

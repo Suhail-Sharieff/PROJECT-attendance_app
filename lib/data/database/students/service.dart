@@ -24,13 +24,11 @@ class StudentDBService implements StudentDBAbstractProvider{
   Future<List<Map<String, dynamic>>> getStudentAttendanceMapList(Student student)=>instance.getStudentAttendanceMapList(student);
 
   @override
-  Future<void> markStudentAbsent(Student student) =>instance.markStudentAbsent(student);
-
-  @override
-  Future<void> markStudentPresent(Student student)=>instance.markStudentPresent(student);
-
-  @override
   Future<bool> isPresentToday(Student student)=>instance.isPresentToday(student);
+
+  @override
+  Future<void> markStudent(Student student) =>instance.markStudent(student);
+
 
 
 

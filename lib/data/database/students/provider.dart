@@ -30,7 +30,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   final attendanceTable='attendance';
   final attendanceIDcol='attendanceID';
   final dateCol = 'date';
-  final isPresentCol = 'isPresent';
+  final isPresentCol = 'isPresentThatDay';
 
   Future<Database> init_and_getDB() async {
     final storeDir = await getDatabasesPath();
@@ -71,7 +71,6 @@ class StudentDBProvider implements StudentDBAbstractProvider {
       final db = await getDB();
       int id = await db.insert(tableName, {
         nameCol: newStudent.name,
-        nOfClassesAttendedCol: newStudent.nOfClassesAttended,
       });
       log("INSERTED");
     } catch (e) {
@@ -144,47 +143,57 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     return formatter.format(now);
   }
 
+
+
+
+
   @override
-  Future<void> markStudentPresent(Student student) async {
+  Future<void>markStudent(Student student)async{
     try {
-      final db = await getDB();
-      final ddmmyyyy = getFormattedDate();
-
-      // Check if the student is already marked present for today's date
-      final existingRecord = await db.query(
-        attendanceTable,
-        where: '$rollCol = ? AND $dateCol = ?',
-        whereArgs: [student.roll, ddmmyyyy],
-      );
-
-      // If there's no existing record, insert the attendance record
-      if (existingRecord.isEmpty) {
-        await db.insert(attendanceTable, {
-          rollCol: student.roll,
-          dateCol: ddmmyyyy,
-          isPresentCol: 1, // Mark as present
-        });
-
-        // Update the student's attendance count
-        await db.update(
-          tableName,
-          {
-            nameCol: student.name,
-            nOfClassesAttendedCol: student.nOfClassesAttended + 1,
-          },
-          where: '$rollCol = ?',
-          whereArgs: [student.roll],
+      final hasAttendanceAlready=await attendanceTableHasAttendanceForTodayOf(student);
+      final db=await getDB();
+      final date=getFormattedDate();
+      //if he has attendance already and we r calling mark Student, means we need to delete that student from attendance table and decrease nOfAttended from students table
+      if(hasAttendanceAlready){
+        //lets delete first that student from attendace table
+        await db.delete(attendanceTable,
+        where: '$rollCol=? AND $dateCol=?',
+          whereArgs: [student.roll,date]
         );
-
-        log("MARKED PRESENT");
-      } else {
-        log("Attendance already recorded for ${student.name} on $ddmmyyyy");
+        //now lets decrement nOfAttended in students table fro that student
+        await db.update(tableName,
+        {
+          nOfClassesAttendedCol:student.nOfClassesAttended-1
+        },
+        where: '$rollCol=?', whereArgs: [student.roll]
+        );
+        log("DELETED FROM ATTENDANCE TABLE AND UPDATED STUDENS TABLE");
+      }else{
+        //if he doent have attendance already, we nned to insert into attendance table and also increase nof attendaed in student db
+        await db.insert(attendanceTable,
+        {
+          rollCol:student.roll,
+          isPresentCol:1,
+          dateCol:date
+        }
+        );
+        //increase classes attended in students table
+        await db.update(tableName,
+        {
+          nOfClassesAttendedCol:student.nOfClassesAttended+1
+        },
+          where: '$rollCol=?',
+          whereArgs: [student.roll]
+        );
+        log("INSERTED INTO ATTENDANCE TABLE AND UPDATED STUDENS TABLE");
       }
-    } catch (e) {
+    }  catch (e) {
       log(e.toString());
       throw CouldntMarkStudentException();
     }
+
   }
+
 
 
   @override
@@ -216,49 +225,23 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
 
-  @override
-  Future<void> markStudentAbsent(Student student) async {
-    try {
-      final db = await getDB();
-      final ddmmyyyy = getFormattedDate(); // Get the current date in your desired format.
-      // Query the last inserted attendance record for the student.
-      final result = await db.query(
-        attendanceTable,
-        where: '$rollCol = ?',
-        whereArgs: [student.roll],
-        orderBy: '$dateCol DESC', // Order by date in descending order to get the most recent record
-        limit: 1, // Limit to 1 to get only the most recent record
-      );
+  //utilities functions:
 
-      if (result.isNotEmpty) {
-        final lastRecord = result.first;
-
-        // Update the most recent attendance record for the student
-        await db.update(
-          attendanceTable,
-          {
-            isPresentCol: 0, // Mark as absent (assuming 0 is for absent)
-            dateCol: ddmmyyyy, // Ensure the date is set correctly
-          },
-          where: '$attendanceIDcol = ?', // Use the attendance ID to target the specific record
-          whereArgs: [lastRecord[attendanceIDcol]], // Reference the ID of the last attendance record
-        );
-        await db.update(
-            tableName,
-            {
-              nameCol: student.name,
-              nOfClassesAttendedCol: student.nOfClassesAttended-1,
-            },
-            where: '$rollCol=?',
-            whereArgs: [student.roll]);
-        log("MARKED ABSENT");
-      } else {
-        log("No attendance record found for this student.");
-      }
-    } catch (e) {
-      log(e.toString());
-      throw CouldntMarkStudentException();
-    }
+  //this will tell me if that student has attendance on curr day:
+  Future<bool>attendanceTableHasAttendanceForTodayOf(Student student)async{
+    final db=await getDB();
+    final String ddmmyyyy=getFormattedDate();
+    //attendance col has attendanceID,isPresent,date,roll(as foreign key)
+    final existingRecord = await db.query(
+      attendanceTable,
+      where: '$rollCol = ? AND $dateCol = ?',
+      whereArgs: [student.roll, ddmmyyyy],
+    );
+    //if this record is empty, then that student has no attendance for that date
+    //else he has
+    return existingRecord.isNotEmpty;
   }
+
+
 
 }

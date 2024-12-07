@@ -33,6 +33,11 @@ class _AttendancePageState extends State<AttendancePage> {
     li = await service.getAllStudents(sortBy);
   }
 
+  Future<bool> isStudentPresentTody(Student student) async {
+    bool res = await service.isPresentToday(student);
+    return res;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +59,8 @@ class _AttendancePageState extends State<AttendancePage> {
                 const PopupMenuItem<SortBy>(
                   value: SortBy.nOfClassesAttended,
                   child: Text('Attendance'),
-                ),const PopupMenuItem<SortBy>(
+                ),
+                const PopupMenuItem<SortBy>(
                   value: SortBy.roll,
                   child: Text('Date added'),
                 ),
@@ -84,44 +90,64 @@ class _AttendancePageState extends State<AttendancePage> {
             itemCount: li.length,
             itemBuilder: (_, idx) {
               Student st = li[idx];
-              return ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),  // Padding to make the list tile feel more spacious
-                leading: const Icon(Icons.person, color: Colors.blueAccent),
-                trailing: IconButton(onPressed: ()async{
-                  bool isPresentToday=await service.isPresentToday(st);
-                    log(isPresentToday.toString());
-                }, icon: Icon(Icons.check)),// Leading icon to represent the student
-                title: Text(
-                  'ID : ${st.roll}: ${st.name}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                subtitle: Text(
-                  'No of classes attended: ${st.nOfClassesAttended}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                onLongPress: () async {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => StudentProfilePage(
-                      student: st,
-                      service: service,
+              return FutureBuilder(
+                future: isStudentPresentTody(st),
+                builder: (_, snap) {
+                  if (snap.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  bool isPresent = snap.data!;
+                  return ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical:
+                            8), // Padding to make the list tile feel more spacious
+                    leading: const Icon(Icons.person, color: Colors.blueAccent),
+                    trailing: IconButton(
+                        onPressed: () async {
+                          await service.markStudent(st);
+                          setState(() {});
+                        },
+                        icon: (isPresent)
+                            ? (const Icon(Icons.check))
+                            : const Icon(Icons
+                                .remove)), // Leading icon to represent the student
+                    title: Text(
+                      'ID : ${idx+1}: ${st.name}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
-                  ));
+                    subtitle: Text(
+                      'No of classes attended: ${st.nOfClassesAttended}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    onLongPress: () async {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => StudentProfilePage(
+                          student: st,
+                          service: service,
+                        ),
+                      ));
+                    },
+
+                    tileColor:
+                        Colors.grey[50], // Add a background color to the tile
+                    shape: RoundedRectangleBorder(
+                      // Round the corners of the tile for a more modern look
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    // elevation: 2,  // Adding a subtle shadow to lift the tile visually
+                  );
                 },
-
-                tileColor: Colors.grey[50],  // Add a background color to the tile
-                shape: RoundedRectangleBorder(  // Round the corners of the tile for a more modern look
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                // elevation: 2,  // Adding a subtle shadow to lift the tile visually
               );
-
             },
           );
         },
@@ -137,13 +163,15 @@ class _AttendancePageState extends State<AttendancePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextField(
-                        
-                        decoration:
-                        const InputDecoration(border: OutlineInputBorder(),label: Text("Enter name of student")),
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            label: Text("Enter name of student")),
                         autofocus: true,
                         controller: nameContr,
                       ),
-                      SizedBox.fromSize(size: const Size(23, 23),),
+                      SizedBox.fromSize(
+                        size: const Size(23, 23),
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -159,7 +187,8 @@ class _AttendancePageState extends State<AttendancePage> {
                                   await fetchData(); // Refresh data after adding
                                 } else {
                                   await MyToast.showErrorMsg(
-                                      "Please provide name of student !",context);
+                                      "Please provide name of student !",
+                                      context);
                                 }
                               },
                               child: const Text("Add")),
@@ -184,4 +213,3 @@ class _AttendancePageState extends State<AttendancePage> {
     );
   }
 }
-
