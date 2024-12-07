@@ -99,52 +99,58 @@ class _AttendancePageState extends State<AttendancePage> {
                     );
                   }
                   bool isPresent = snap.data!;
-                  return ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical:
-                            8), // Padding to make the list tile feel more spacious
-                    leading: const Icon(Icons.person, color: Colors.blueAccent),
-                    trailing: IconButton(
-                        onPressed: () async {
-                          await service.markStudent(st);
-                          setState(() {});
-                        },
-                        icon: (isPresent)
-                            ? (const Icon(Icons.check))
-                            : const Icon(Icons
-                                .remove)), // Leading icon to represent the student
-                    title: Text(
-                      'ID : ${idx+1}: ${st.name}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'No of classes attended: ${st.nOfClassesAttended}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                    onLongPress: () async {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => StudentProfilePage(
-                          student: st,
-                          service: service,
+                  return Column(
+                    children: [
+                      ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical:
+                                8), // Padding to make the list tile feel more spacious
+                        leading: CircleAvatar(child: Text('${idx+1}'),backgroundColor: Colors.yellow,),
+                        trailing: IconButton(
+                            onPressed: () async {
+                              await service.markStudent(st);
+                              setState(() {});
+                            },
+                            icon: (isPresent)
+                                ? (const Icon(Icons.back_hand,color: Colors.green,applyTextScaling: true,))
+                                : const Icon(Icons
+                                    .remove)), // Leading icon to represent the student
+                        title: Text(
+                          'ID : ${idx+1}: ${st.name}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
-                      ));
-                    },
+                        subtitle: Text(
+                          'Attended: ${st.nOfClassesAttended}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        onLongPress: () async {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => StudentProfilePage(
+                              student: st,
+                              service: service,
+                            ),
+                          ));
+                        },
 
-                    tileColor:
-                        Colors.grey[50], // Add a background color to the tile
-                    shape: RoundedRectangleBorder(
-                      // Round the corners of the tile for a more modern look
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    // elevation: 2,  // Adding a subtle shadow to lift the tile visually
+                        tileColor:
+                            Colors.grey[50], // Add a background color to the tile
+                        shape: RoundedRectangleBorder(
+                          // Round the corners of the tile for a more modern look
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        // elevation: 2,  // Adding a subtle shadow to lift the tile visually
+                      ),
+
+                      const Divider(),
+                    ],
                   );
                 },
               );
