@@ -87,12 +87,7 @@ class _AttendancePageState extends State<AttendancePage> {
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),  // Padding to make the list tile feel more spacious
                 leading: const Icon(Icons.person, color: Colors.blueAccent),
-                trailing: ElevatedButton(onPressed: ()async{
-                  await service.updateStudent(st.copyWith(roll:st.roll,name:st.name,nOfClassesAttended: st.nOfClassesAttended+1));
-                  setState(() {
-
-                  });
-                }, child: const Icon(Icons.co_present)),// Leading icon to represent the student
+                trailing: Icon(Icons.circle_outlined),// Leading icon to represent the student
                 title: Text(
                   'ID : ${idx+1}: ${st.name}',
                   style: const TextStyle(
@@ -108,7 +103,7 @@ class _AttendancePageState extends State<AttendancePage> {
                     color: Colors.grey[700],
                   ),
                 ),
-                onTap: () async {
+                onLongPress: () async {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => StudentProfilePage(
                       student: st,
@@ -116,10 +111,7 @@ class _AttendancePageState extends State<AttendancePage> {
                     ),
                   ));
                 },
-                onLongPress: () async {
-                  await service.deleteStudent(st);
-                  setState(() {});
-                },
+
                 tileColor: Colors.grey[50],  // Add a background color to the tile
                 shape: RoundedRectangleBorder(  // Round the corners of the tile for a more modern look
                   borderRadius: BorderRadius.circular(12),

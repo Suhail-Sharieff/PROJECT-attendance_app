@@ -2,3 +2,5 @@ class CouldntAddStudentException implements Exception{}
 class CouldntReadStudentsException implements Exception{}
 class CouldntUpdateStudentException implements Exception{}
 class CouldntDeleteStudentException implements Exception{}
+class CouldntMarkStudentException implements Exception{}
+class CouldntGetStudentAttendanceList implements Exception{}

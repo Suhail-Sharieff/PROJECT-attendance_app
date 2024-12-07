@@ -6,4 +6,7 @@ abstract class StudentDBAbstractProvider{
   Future<List<Student>>getAllStudents(SortBy how);
   Future<void>updateStudent(Student student);
   Future<void>deleteStudent(Student student);
+  Future<void>markStudentPresent(Student student);
+  Future<void>markStudentAbsent(Student student);
+  Future<void>getStudentAttendanceMapList(Student student);
 }
