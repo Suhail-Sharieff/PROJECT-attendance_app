@@ -1,3 +1,4 @@
+import 'package:attendance_app/data/database/students/constants.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 
@@ -8,8 +9,8 @@ part  'classes_model.g.dart';
 @freezed
 class Class with _$Class{
   factory Class({
-    @Default(-1) @JsonKey(name: 'class_id') int class_id,
-    @Default('no name') @JsonKey(name: 'name') String class_name,
+    @Default(-1) @JsonKey(name: classIDcol) int class_id,
+    @Default('no name') @JsonKey(name: classNameCol) String class_name,
   }) = _Class;
 
   factory Class.fromJson(Map<String, dynamic> json) =>

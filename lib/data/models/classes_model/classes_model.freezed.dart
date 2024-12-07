@@ -20,9 +20,9 @@ Class _$ClassFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Class {
-  @JsonKey(name: 'class_id')
+  @JsonKey(name: classIDcol)
   int get class_id => throw _privateConstructorUsedError;
-  @JsonKey(name: 'name')
+  @JsonKey(name: classNameCol)
   String get class_name => throw _privateConstructorUsedError;
 
   /// Serializes this Class to a JSON map.
@@ -40,8 +40,8 @@ abstract class $ClassCopyWith<$Res> {
       _$ClassCopyWithImpl<$Res, Class>;
   @useResult
   $Res call(
-      {@JsonKey(name: 'class_id') int class_id,
-      @JsonKey(name: 'name') String class_name});
+      {@JsonKey(name: classIDcol) int class_id,
+      @JsonKey(name: classNameCol) String class_name});
 }
 
 /// @nodoc
@@ -83,8 +83,8 @@ abstract class _$$ClassImplCopyWith<$Res> implements $ClassCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'class_id') int class_id,
-      @JsonKey(name: 'name') String class_name});
+      {@JsonKey(name: classIDcol) int class_id,
+      @JsonKey(name: classNameCol) String class_name});
 }
 
 /// @nodoc
@@ -120,17 +120,17 @@ class __$$ClassImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ClassImpl implements _Class {
   _$ClassImpl(
-      {@JsonKey(name: 'class_id') this.class_id = -1,
-      @JsonKey(name: 'name') this.class_name = 'no name'});
+      {@JsonKey(name: classIDcol) this.class_id = -1,
+      @JsonKey(name: classNameCol) this.class_name = 'no name'});
 
   factory _$ClassImpl.fromJson(Map<String, dynamic> json) =>
       _$$ClassImplFromJson(json);
 
   @override
-  @JsonKey(name: 'class_id')
+  @JsonKey(name: classIDcol)
   final int class_id;
   @override
-  @JsonKey(name: 'name')
+  @JsonKey(name: classNameCol)
   final String class_name;
 
   @override
@@ -171,16 +171,16 @@ class _$ClassImpl implements _Class {
 
 abstract class _Class implements Class {
   factory _Class(
-      {@JsonKey(name: 'class_id') final int class_id,
-      @JsonKey(name: 'name') final String class_name}) = _$ClassImpl;
+      {@JsonKey(name: classIDcol) final int class_id,
+      @JsonKey(name: classNameCol) final String class_name}) = _$ClassImpl;
 
   factory _Class.fromJson(Map<String, dynamic> json) = _$ClassImpl.fromJson;
 
   @override
-  @JsonKey(name: 'class_id')
+  @JsonKey(name: classIDcol)
   int get class_id;
   @override
-  @JsonKey(name: 'name')
+  @JsonKey(name: classNameCol)
   String get class_name;
 
   /// Create a copy of Class

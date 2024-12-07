@@ -20,13 +20,13 @@ Student _$StudentFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Student {
-  @JsonKey(name: 'roll')
+  @JsonKey(name: rollCol)
   int get roll => throw _privateConstructorUsedError;
-  @JsonKey(name: 'name')
+  @JsonKey(name: nameCol)
   String get name => throw _privateConstructorUsedError;
-  @JsonKey(name: 'nOfClassesAttended')
+  @JsonKey(name: nOfClassesAttendedCol)
   int get nOfClassesAttended => throw _privateConstructorUsedError;
-  @JsonKey(name: 'class_name')
+  @JsonKey(name: classNameCol)
   String get className => throw _privateConstructorUsedError;
 
   /// Serializes this Student to a JSON map.
@@ -44,10 +44,10 @@ abstract class $StudentCopyWith<$Res> {
       _$StudentCopyWithImpl<$Res, Student>;
   @useResult
   $Res call(
-      {@JsonKey(name: 'roll') int roll,
-      @JsonKey(name: 'name') String name,
-      @JsonKey(name: 'nOfClassesAttended') int nOfClassesAttended,
-      @JsonKey(name: 'class_name') String className});
+      {@JsonKey(name: rollCol) int roll,
+      @JsonKey(name: nameCol) String name,
+      @JsonKey(name: nOfClassesAttendedCol) int nOfClassesAttended,
+      @JsonKey(name: classNameCol) String className});
 }
 
 /// @nodoc
@@ -99,10 +99,10 @@ abstract class _$$StudentImplCopyWith<$Res> implements $StudentCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'roll') int roll,
-      @JsonKey(name: 'name') String name,
-      @JsonKey(name: 'nOfClassesAttended') int nOfClassesAttended,
-      @JsonKey(name: 'class_name') String className});
+      {@JsonKey(name: rollCol) int roll,
+      @JsonKey(name: nameCol) String name,
+      @JsonKey(name: nOfClassesAttendedCol) int nOfClassesAttended,
+      @JsonKey(name: classNameCol) String className});
 }
 
 /// @nodoc
@@ -148,25 +148,25 @@ class __$$StudentImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$StudentImpl implements _Student {
   _$StudentImpl(
-      {@JsonKey(name: 'roll') this.roll = -1,
-      @JsonKey(name: 'name') this.name = 'no name',
-      @JsonKey(name: 'nOfClassesAttended') this.nOfClassesAttended = 0,
-      @JsonKey(name: 'class_name') this.className = 'no_class_name_given'});
+      {@JsonKey(name: rollCol) this.roll = -1,
+      @JsonKey(name: nameCol) this.name = 'no name',
+      @JsonKey(name: nOfClassesAttendedCol) this.nOfClassesAttended = 0,
+      @JsonKey(name: classNameCol) this.className = 'no_class_name_given'});
 
   factory _$StudentImpl.fromJson(Map<String, dynamic> json) =>
       _$$StudentImplFromJson(json);
 
   @override
-  @JsonKey(name: 'roll')
+  @JsonKey(name: rollCol)
   final int roll;
   @override
-  @JsonKey(name: 'name')
+  @JsonKey(name: nameCol)
   final String name;
   @override
-  @JsonKey(name: 'nOfClassesAttended')
+  @JsonKey(name: nOfClassesAttendedCol)
   final int nOfClassesAttended;
   @override
-  @JsonKey(name: 'class_name')
+  @JsonKey(name: classNameCol)
   final String className;
 
   @override
@@ -210,24 +210,24 @@ class _$StudentImpl implements _Student {
 
 abstract class _Student implements Student {
   factory _Student(
-      {@JsonKey(name: 'roll') final int roll,
-      @JsonKey(name: 'name') final String name,
-      @JsonKey(name: 'nOfClassesAttended') final int nOfClassesAttended,
-      @JsonKey(name: 'class_name') final String className}) = _$StudentImpl;
+      {@JsonKey(name: rollCol) final int roll,
+      @JsonKey(name: nameCol) final String name,
+      @JsonKey(name: nOfClassesAttendedCol) final int nOfClassesAttended,
+      @JsonKey(name: classNameCol) final String className}) = _$StudentImpl;
 
   factory _Student.fromJson(Map<String, dynamic> json) = _$StudentImpl.fromJson;
 
   @override
-  @JsonKey(name: 'roll')
+  @JsonKey(name: rollCol)
   int get roll;
   @override
-  @JsonKey(name: 'name')
+  @JsonKey(name: nameCol)
   String get name;
   @override
-  @JsonKey(name: 'nOfClassesAttended')
+  @JsonKey(name: nOfClassesAttendedCol)
   int get nOfClassesAttended;
   @override
-  @JsonKey(name: 'class_name')
+  @JsonKey(name: classNameCol)
   String get className;
 
   /// Create a copy of Student
