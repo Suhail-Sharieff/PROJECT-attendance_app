@@ -151,13 +151,9 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16.0),
                       ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Icon(
-                          Icons.person,
-                          color: Colors.blue,
-                          size: 44.0,
-                        ),
+                      child:  Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CircleAvatar(foregroundColor:Colors.blueAccent,backgroundColor: Colors.white,child: Text('${widget.student.roll}',style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 40,),),),
                       ),
                     ),
                     Padding(
@@ -176,12 +172,16 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                     Padding(
                       padding: const EdgeInsetsDirectional.fromSTEB(
                           0.0, 4.0, 0.0, 0.0),
-                      child: Text(
-                        'Rg.No: ${widget.student.roll} ',
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          letterSpacing: 0.0,
-                        ),
+                      child: Column(
+                        children: [
+                          Text(
+                            '${widget.student.className} ',
+                            style: const TextStyle(
+                              fontFamily: 'Inter',
+                              letterSpacing: 0.0,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
