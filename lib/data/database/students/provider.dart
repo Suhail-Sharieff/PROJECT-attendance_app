@@ -9,6 +9,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:intl/intl.dart';
 
+import 'constants.dart';
+
 class StudentDBProvider implements StudentDBAbstractProvider {
   StudentDBProvider._constructor();
 
@@ -16,20 +18,9 @@ class StudentDBProvider implements StudentDBAbstractProvider {
 
   factory StudentDBProvider() => instance;
 
-  final dbName = 'students.db';
   Database? myDB;
-  final tableName = 'students';
 
-  //each student has roll,name,nOfClassesAttended,marks map
-  final rollCol = 'roll';
-  final nameCol = 'name';
-  final nOfClassesAttendedCol = 'nOfClassesAttended';
-
-  //separate tabe for students attendance tracking
-  final attendanceTable='attendance';
-  final attendanceIDcol='attendanceID';
-  final dateCol = 'date';
-  final isPresentCol = 'isPresentThatDay';
+  //table for classes
 
   Future<Database> init_and_getDB() async {
     final storeDir = await getDatabasesPath();
@@ -45,6 +36,17 @@ class StudentDBProvider implements StudentDBAbstractProvider {
           ''');
     });
 
+    await db.execute(
+      ''' 
+        CREATE TABLE IF NOT EXISTS $attendanceTable (
+        $attendanceIDcol INTEGER PRIMARY KEY AUTOINCREMENT,
+        $rollCol INTEGER,
+        $isPresentCol INTEGER,
+        $dateCol TEXT,
+        FOREIGN KEY($rollCol) REFERENCES $tableName($rollCol)
+        );
+      '''
+    );
     await db.execute(
       ''' 
         CREATE TABLE IF NOT EXISTS $attendanceTable (
