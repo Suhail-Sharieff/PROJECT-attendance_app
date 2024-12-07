@@ -31,8 +31,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MySplashScreen(home: HomePage()),
-      // home: const ClassesPage(),
+      // home: const MySplashScreen(home: HomePage()),
+      home: const ClassesPage(),
     );
   }
 }

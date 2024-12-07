@@ -23,7 +23,7 @@ mixin _$Class {
   @JsonKey(name: 'class_id')
   int get class_id => throw _privateConstructorUsedError;
   @JsonKey(name: 'name')
-  String get name => throw _privateConstructorUsedError;
+  String get class_name => throw _privateConstructorUsedError;
 
   /// Serializes this Class to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +41,7 @@ abstract class $ClassCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'class_id') int class_id,
-      @JsonKey(name: 'name') String name});
+      @JsonKey(name: 'name') String class_name});
 }
 
 /// @nodoc
@@ -60,16 +60,16 @@ class _$ClassCopyWithImpl<$Res, $Val extends Class>
   @override
   $Res call({
     Object? class_id = null,
-    Object? name = null,
+    Object? class_name = null,
   }) {
     return _then(_value.copyWith(
       class_id: null == class_id
           ? _value.class_id
           : class_id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
+      class_name: null == class_name
+          ? _value.class_name
+          : class_name // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -84,7 +84,7 @@ abstract class _$$ClassImplCopyWith<$Res> implements $ClassCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'class_id') int class_id,
-      @JsonKey(name: 'name') String name});
+      @JsonKey(name: 'name') String class_name});
 }
 
 /// @nodoc
@@ -101,16 +101,16 @@ class __$$ClassImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? class_id = null,
-    Object? name = null,
+    Object? class_name = null,
   }) {
     return _then(_$ClassImpl(
       class_id: null == class_id
           ? _value.class_id
           : class_id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
+      class_name: null == class_name
+          ? _value.class_name
+          : class_name // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -121,7 +121,7 @@ class __$$ClassImplCopyWithImpl<$Res>
 class _$ClassImpl implements _Class {
   _$ClassImpl(
       {@JsonKey(name: 'class_id') this.class_id = -1,
-      @JsonKey(name: 'name') this.name = 'no name'});
+      @JsonKey(name: 'name') this.class_name = 'no name'});
 
   factory _$ClassImpl.fromJson(Map<String, dynamic> json) =>
       _$$ClassImplFromJson(json);
@@ -131,11 +131,11 @@ class _$ClassImpl implements _Class {
   final int class_id;
   @override
   @JsonKey(name: 'name')
-  final String name;
+  final String class_name;
 
   @override
   String toString() {
-    return 'Class(class_id: $class_id, name: $name)';
+    return 'Class(class_id: $class_id, class_name: $class_name)';
   }
 
   @override
@@ -145,12 +145,13 @@ class _$ClassImpl implements _Class {
             other is _$ClassImpl &&
             (identical(other.class_id, class_id) ||
                 other.class_id == class_id) &&
-            (identical(other.name, name) || other.name == name));
+            (identical(other.class_name, class_name) ||
+                other.class_name == class_name));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, class_id, name);
+  int get hashCode => Object.hash(runtimeType, class_id, class_name);
 
   /// Create a copy of Class
   /// with the given fields replaced by the non-null parameter values.
@@ -171,7 +172,7 @@ class _$ClassImpl implements _Class {
 abstract class _Class implements Class {
   factory _Class(
       {@JsonKey(name: 'class_id') final int class_id,
-      @JsonKey(name: 'name') final String name}) = _$ClassImpl;
+      @JsonKey(name: 'name') final String class_name}) = _$ClassImpl;
 
   factory _Class.fromJson(Map<String, dynamic> json) = _$ClassImpl.fromJson;
 
@@ -180,7 +181,7 @@ abstract class _Class implements Class {
   int get class_id;
   @override
   @JsonKey(name: 'name')
-  String get name;
+  String get class_name;
 
   /// Create a copy of Class
   /// with the given fields replaced by the non-null parameter values.

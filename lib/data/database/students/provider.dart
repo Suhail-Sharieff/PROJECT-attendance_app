@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:attendance_app/constants/enums/sort_by.dart';
 import 'package:attendance_app/data/database/students/abstract_provider.dart';
 import 'package:attendance_app/data/database/students/exceptions.dart';
+import 'package:attendance_app/data/models/classes_model/classes_model.dart';
 import 'package:attendance_app/data/models/student_model/student_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -20,7 +20,6 @@ class StudentDBProvider implements StudentDBAbstractProvider {
 
   Database? myDB;
 
-  //table for classes
 
   Future<Database> init_and_getDB() async {
     final storeDir = await getDatabasesPath();
@@ -49,12 +48,9 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     );
     await db.execute(
       ''' 
-        CREATE TABLE IF NOT EXISTS $attendanceTable (
-        $attendanceIDcol INTEGER PRIMARY KEY AUTOINCREMENT,
-        $rollCol INTEGER,
-        $isPresentCol INTEGER,
-        $dateCol TEXT,
-        FOREIGN KEY($rollCol) REFERENCES $tableName($rollCol)
+        CREATE TABLE IF NOT EXISTS $classesTable (
+        $classIDcol INTEGER PRIMARY KEY AUTOINCREMENT,
+        $classNameCol TEXT
         );
       '''
     );
@@ -137,7 +133,8 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     }
   }
 
-  String getFormattedDate() {
+  @override
+  String getTodaysDate() {
     //using intl package
     DateTime now = DateTime.now();
     DateFormat formatter = DateFormat('dd/MM/yyyy');
@@ -153,7 +150,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     try {
       final hasAttendanceAlready=await attendanceTableHasAttendanceForTodayOf(student);
       final db=await getDB();
-      final date=getFormattedDate();
+      final date=getTodaysDate();
       //if he has attendance already and we r calling mark Student, means we need to delete that student from attendance table and decrease nOfAttended from students table
       if(hasAttendanceAlready){
         //lets delete first that student from attendace table
@@ -231,7 +228,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   //this will tell me if that student has attendance on curr day:
   Future<bool>attendanceTableHasAttendanceForTodayOf(Student student)async{
     final db=await getDB();
-    final String ddmmyyyy=getFormattedDate();
+    final String ddmmyyyy=getTodaysDate();
     //attendance col has attendanceID,isPresent,date,roll(as foreign key)
     final existingRecord = await db.query(
       attendanceTable,
@@ -247,7 +244,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   Future<void> refresh() async{
     try {
       final db=await getDB();
-      final String ddmmyyyy=getFormattedDate();
+      final String ddmmyyyy=getTodaysDate();
       //mark everyone not present only if none of student has attendance on today:
       final existingRecord = await db.query(
         attendanceTable,
@@ -267,6 +264,51 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     } catch (e) {
       log(e.toString());
       throw Exception("COULDNT MARK ALL ATTENDED COL AS 0");
+    }
+  }
+
+  @override
+  Future<List<Class>> getAllClasses() async{
+    try{
+      final db=await getDB();
+      List<Map<String,dynamic>>list;
+      list=await db.query(classesTable);
+      return List.generate(
+        list.length,
+          (idx){
+          return Class.fromJson(list[idx]);
+          }
+      );
+    }catch(e){
+      throw CouldntReadClassesException();
+    }
+  }
+
+  @override
+  Future<void> addClass(Class newClass) async{
+   try{
+     final db=await getDB();
+     await db.insert(classesTable,
+     {
+       classNameCol:newClass.class_name,
+     }
+     );
+     log("CLASS CREATION SUCCESS");
+   }catch(e){
+     log(e.toString());
+     throw CouldntAddClassException();
+   }
+  }
+
+  @override
+  Future<void> deleteClass(Class c) async{
+    try{
+      final db=await getDB();
+      await db.delete(classesTable,where: '$classNameCol=?',whereArgs: [c.class_name]);
+      log("CLASS DELETION SUCCESS");
+    }catch(e){
+      log(e.toString());
+      throw CouldntDeleteClassException();
     }
   }
 

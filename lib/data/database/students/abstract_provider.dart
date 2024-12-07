@@ -1,4 +1,5 @@
 import 'package:attendance_app/constants/enums/sort_by.dart';
+import 'package:attendance_app/data/models/classes_model/classes_model.dart';
 import 'package:attendance_app/data/models/student_model/student_model.dart';
 
 abstract class StudentDBAbstractProvider{
@@ -10,4 +11,9 @@ abstract class StudentDBAbstractProvider{
   Future<bool>isPresentToday(Student student);
   Future<void>markStudent(Student student);
   Future<void>refresh();
+  String getTodaysDate();
+
+  Future<void>addClass(Class newClass);
+  Future<List<Class>>getAllClasses();
+  Future<void>deleteClass(Class c);
 }

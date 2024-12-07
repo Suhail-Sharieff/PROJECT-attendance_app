@@ -9,7 +9,7 @@ part  'classes_model.g.dart';
 class Class with _$Class{
   factory Class({
     @Default(-1) @JsonKey(name: 'class_id') int class_id,
-    @Default('no name') @JsonKey(name: 'name') String name,
+    @Default('no name') @JsonKey(name: 'name') String class_name,
   }) = _Class;
 
   factory Class.fromJson(Map<String, dynamic> json) =>

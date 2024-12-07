@@ -20,13 +20,15 @@ class _AttendancePageState extends State<AttendancePage> {
   final service = StudentDBService();
   final TextEditingController nameContr = TextEditingController();
   SortBy sortBy = SortBy.name;
-
+  String todaysDate='';
   List<Student> li = [];
 
   @override
   void initState() {
     super.initState();
-    fetchData(); // Fetch initial data
+    fetchData();
+    // Fetch initial data
+    todaysDate=service.getTodaysDate();
   }
 
   Future<void> fetchData() async {
@@ -43,7 +45,7 @@ class _AttendancePageState extends State<AttendancePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Mark Attendance"),
+        title: Text(todaysDate),
         centerTitle: true,
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
