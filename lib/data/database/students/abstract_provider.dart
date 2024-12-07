@@ -9,4 +9,5 @@ abstract class StudentDBAbstractProvider{
   Future<List<Map<String,dynamic>>>getStudentAttendanceMapList(Student student);
   Future<bool>isPresentToday(Student student);
   Future<void>markStudent(Student student);
+  Future<void>refresh();
 }

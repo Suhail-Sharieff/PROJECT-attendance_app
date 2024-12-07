@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/Widgets/appBar.dart';
+import '../../constants/Widgets/appBar.dart';
 
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({super.key});

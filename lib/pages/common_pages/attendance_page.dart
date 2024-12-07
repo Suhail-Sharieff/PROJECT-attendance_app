@@ -5,7 +5,7 @@ import 'package:attendance_app/constants/Widgets/appBar.dart';
 import 'package:attendance_app/constants/enums/sort_by.dart';
 import 'package:attendance_app/data/database/students/service.dart';
 import 'package:attendance_app/data/models/student_model/student_model.dart';
-import 'package:attendance_app/pages/student_profile.dart';
+import 'package:attendance_app/pages/student_pages/student_profile.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -31,9 +31,10 @@ class _AttendancePageState extends State<AttendancePage> {
 
   Future<void> fetchData() async {
     li = await service.getAllStudents(sortBy);
+    await service.refresh();
   }
 
-  Future<bool> isStudentPresentTody(Student student) async {
+  Future<bool> isStudentPresentToday(Student student) async {
     bool res = await service.isPresentToday(student);
     return res;
   }
@@ -91,7 +92,7 @@ class _AttendancePageState extends State<AttendancePage> {
             itemBuilder: (_, idx) {
               Student st = li[idx];
               return FutureBuilder(
-                future: isStudentPresentTody(st),
+                future: isStudentPresentToday(st),
                 builder: (_, snap) {
                   if (snap.connectionState == ConnectionState.waiting) {
                     return const Center(
@@ -106,18 +107,25 @@ class _AttendancePageState extends State<AttendancePage> {
                             horizontal: 16,
                             vertical:
                                 8), // Padding to make the list tile feel more spacious
-                        leading: CircleAvatar(child: Text('${idx+1}'),backgroundColor: Colors.yellow,),
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.yellow,
+                          child: Text('${idx + 1}'),
+                        ),
                         trailing: IconButton(
                             onPressed: () async {
                               await service.markStudent(st);
                               setState(() {});
                             },
                             icon: (isPresent)
-                                ? (const Icon(Icons.back_hand,color: Colors.green,applyTextScaling: true,))
+                                ? (const Icon(
+                                    Icons.back_hand,
+                                    color: Colors.green,
+                                    applyTextScaling: true,
+                                  ))
                                 : const Icon(Icons
                                     .remove)), // Leading icon to represent the student
                         title: Text(
-                          'ID : ${idx+1}: ${st.name}',
+                          'ID : ${idx + 1}: ${st.name}',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -140,15 +148,15 @@ class _AttendancePageState extends State<AttendancePage> {
                           ));
                         },
 
-                        tileColor:
-                            Colors.grey[50], // Add a background color to the tile
+
+                        tileColor: Colors
+                            .grey[50], // Add a background color to the tile
                         shape: RoundedRectangleBorder(
                           // Round the corners of the tile for a more modern look
                           borderRadius: BorderRadius.circular(12),
                         ),
                         // elevation: 2,  // Adding a subtle shadow to lift the tile visually
                       ),
-
                       const Divider(),
                     ],
                   );

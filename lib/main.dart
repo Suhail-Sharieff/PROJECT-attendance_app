@@ -1,7 +1,8 @@
-import 'package:attendance_app/pages/MorePage.dart';
-import 'package:attendance_app/pages/analytics_page.dart';
-import 'package:attendance_app/pages/attendance_page.dart';
-import 'package:attendance_app/pages/home_page.dart';
+import 'package:attendance_app/pages/classes_page.dart';
+import 'package:attendance_app/pages/teacher_pages/MorePage.dart';
+import 'package:attendance_app/pages/common_pages/analytics_page.dart';
+import 'package:attendance_app/pages/common_pages/attendance_page.dart';
+import 'package:attendance_app/pages/teacher_pages/home_page.dart';
 import 'package:attendance_app/splash_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,8 @@ class MyApp extends StatelessWidget {
         homeRoute:(context)=>const HomePage(),
         attendanceRoute:(context)=>const AttendancePage(),
         analyticsRoute:(context)=>const AnalyticsPage(),
-        moreRoute:(context)=>const MorePage()
+        moreRoute:(context)=>const MorePage(),
+        classesRoute:(context)=>const ClassesPage()
       },
       theme: ThemeData(
 
@@ -30,6 +32,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MySplashScreen(home: HomePage()),
+      // home: const ClassesPage(),
     );
   }
 }

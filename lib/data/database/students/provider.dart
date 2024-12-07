@@ -5,7 +5,6 @@ import 'package:attendance_app/constants/enums/sort_by.dart';
 import 'package:attendance_app/data/database/students/abstract_provider.dart';
 import 'package:attendance_app/data/database/students/exceptions.dart';
 import 'package:attendance_app/data/models/student_model/student_model.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:intl/intl.dart';
@@ -240,6 +239,33 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     //if this record is empty, then that student has no attendance for that date
     //else he has
     return existingRecord.isNotEmpty;
+  }
+
+  @override
+  Future<void> refresh() async{
+    try {
+      final db=await getDB();
+      final String ddmmyyyy=getFormattedDate();
+      //mark everyone not present only if none of student has attendance on today:
+      final existingRecord = await db.query(
+        attendanceTable,
+        where: '$dateCol = ?',
+        whereArgs: [ddmmyyyy],
+      );
+     if(existingRecord.isEmpty){
+       await db.update(attendanceTable,
+           {
+             isPresentCol:0,
+           }
+       );
+       log("UPDATED ALL TO NOT ATTENDED");
+     }else{
+       log("ATTENDANCE TAKEN ALREADY ON THAT DATE");
+     }
+    } catch (e) {
+      log(e.toString());
+      throw Exception("COULDNT MARK ALL ATTENDED COL AS 0");
+    }
   }
 
 

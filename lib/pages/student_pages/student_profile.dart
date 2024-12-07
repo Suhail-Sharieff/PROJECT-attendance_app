@@ -2,11 +2,11 @@ import 'package:attendance_app/Utils/percent_indicator.dart';
 import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/routes/routes_names.dart';
 import 'package:attendance_app/data/database/students/service.dart';
-import 'package:attendance_app/pages/home_page.dart';
+import 'package:attendance_app/pages/teacher_pages/home_page.dart';
 import 'package:flutter/material.dart';
 
-import '../data/models/student_model/student_model.dart';
-import 'attendance_page.dart';
+import '../../data/models/student_model/student_model.dart';
+import '../common_pages/attendance_page.dart';
 
 class StudentProfilePage extends StatefulWidget {
   final Student student;

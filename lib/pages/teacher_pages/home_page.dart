@@ -1,6 +1,6 @@
-import 'package:attendance_app/pages/MorePage.dart';
-import 'package:attendance_app/pages/analytics_page.dart';
-import 'package:attendance_app/pages/attendance_page.dart';
+import 'package:attendance_app/pages/teacher_pages/MorePage.dart';
+import 'package:attendance_app/pages/common_pages/analytics_page.dart';
+import 'package:attendance_app/pages/common_pages/attendance_page.dart';
 import 'package:flutter/material.dart';
 
 
