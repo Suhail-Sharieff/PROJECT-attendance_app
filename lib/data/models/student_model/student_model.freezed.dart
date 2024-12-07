@@ -26,6 +26,8 @@ mixin _$Student {
   String get name => throw _privateConstructorUsedError;
   @JsonKey(name: 'nOfClassesAttended')
   int get nOfClassesAttended => throw _privateConstructorUsedError;
+  @JsonKey(name: 'class_name')
+  String get className => throw _privateConstructorUsedError;
 
   /// Serializes this Student to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -44,7 +46,8 @@ abstract class $StudentCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'roll') int roll,
       @JsonKey(name: 'name') String name,
-      @JsonKey(name: 'nOfClassesAttended') int nOfClassesAttended});
+      @JsonKey(name: 'nOfClassesAttended') int nOfClassesAttended,
+      @JsonKey(name: 'class_name') String className});
 }
 
 /// @nodoc
@@ -65,6 +68,7 @@ class _$StudentCopyWithImpl<$Res, $Val extends Student>
     Object? roll = null,
     Object? name = null,
     Object? nOfClassesAttended = null,
+    Object? className = null,
   }) {
     return _then(_value.copyWith(
       roll: null == roll
@@ -79,6 +83,10 @@ class _$StudentCopyWithImpl<$Res, $Val extends Student>
           ? _value.nOfClassesAttended
           : nOfClassesAttended // ignore: cast_nullable_to_non_nullable
               as int,
+      className: null == className
+          ? _value.className
+          : className // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -93,7 +101,8 @@ abstract class _$$StudentImplCopyWith<$Res> implements $StudentCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'roll') int roll,
       @JsonKey(name: 'name') String name,
-      @JsonKey(name: 'nOfClassesAttended') int nOfClassesAttended});
+      @JsonKey(name: 'nOfClassesAttended') int nOfClassesAttended,
+      @JsonKey(name: 'class_name') String className});
 }
 
 /// @nodoc
@@ -112,6 +121,7 @@ class __$$StudentImplCopyWithImpl<$Res>
     Object? roll = null,
     Object? name = null,
     Object? nOfClassesAttended = null,
+    Object? className = null,
   }) {
     return _then(_$StudentImpl(
       roll: null == roll
@@ -126,6 +136,10 @@ class __$$StudentImplCopyWithImpl<$Res>
           ? _value.nOfClassesAttended
           : nOfClassesAttended // ignore: cast_nullable_to_non_nullable
               as int,
+      className: null == className
+          ? _value.className
+          : className // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -136,7 +150,8 @@ class _$StudentImpl implements _Student {
   _$StudentImpl(
       {@JsonKey(name: 'roll') this.roll = -1,
       @JsonKey(name: 'name') this.name = 'no name',
-      @JsonKey(name: 'nOfClassesAttended') this.nOfClassesAttended = 0});
+      @JsonKey(name: 'nOfClassesAttended') this.nOfClassesAttended = 0,
+      @JsonKey(name: 'class_name') this.className = 'no_class_name_given'});
 
   factory _$StudentImpl.fromJson(Map<String, dynamic> json) =>
       _$$StudentImplFromJson(json);
@@ -150,10 +165,13 @@ class _$StudentImpl implements _Student {
   @override
   @JsonKey(name: 'nOfClassesAttended')
   final int nOfClassesAttended;
+  @override
+  @JsonKey(name: 'class_name')
+  final String className;
 
   @override
   String toString() {
-    return 'Student(roll: $roll, name: $name, nOfClassesAttended: $nOfClassesAttended)';
+    return 'Student(roll: $roll, name: $name, nOfClassesAttended: $nOfClassesAttended, className: $className)';
   }
 
   @override
@@ -164,12 +182,15 @@ class _$StudentImpl implements _Student {
             (identical(other.roll, roll) || other.roll == roll) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.nOfClassesAttended, nOfClassesAttended) ||
-                other.nOfClassesAttended == nOfClassesAttended));
+                other.nOfClassesAttended == nOfClassesAttended) &&
+            (identical(other.className, className) ||
+                other.className == className));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, roll, name, nOfClassesAttended);
+  int get hashCode =>
+      Object.hash(runtimeType, roll, name, nOfClassesAttended, className);
 
   /// Create a copy of Student
   /// with the given fields replaced by the non-null parameter values.
@@ -189,10 +210,10 @@ class _$StudentImpl implements _Student {
 
 abstract class _Student implements Student {
   factory _Student(
-          {@JsonKey(name: 'roll') final int roll,
-          @JsonKey(name: 'name') final String name,
-          @JsonKey(name: 'nOfClassesAttended') final int nOfClassesAttended}) =
-      _$StudentImpl;
+      {@JsonKey(name: 'roll') final int roll,
+      @JsonKey(name: 'name') final String name,
+      @JsonKey(name: 'nOfClassesAttended') final int nOfClassesAttended,
+      @JsonKey(name: 'class_name') final String className}) = _$StudentImpl;
 
   factory _Student.fromJson(Map<String, dynamic> json) = _$StudentImpl.fromJson;
 
@@ -205,6 +226,9 @@ abstract class _Student implements Student {
   @override
   @JsonKey(name: 'nOfClassesAttended')
   int get nOfClassesAttended;
+  @override
+  @JsonKey(name: 'class_name')
+  String get className;
 
   /// Create a copy of Student
   /// with the given fields replaced by the non-null parameter values.
