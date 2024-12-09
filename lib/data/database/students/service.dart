@@ -11,7 +11,7 @@ class StudentDBService implements StudentDBAbstractProvider{
   @override
   Future<void> deleteStudent(Student student) =>instance.deleteStudent(student);
   @override
-  Future<List<Student>> getAllStudents(SortBy how) =>instance.getAllStudents(how);
+  Future<List<Student>> getAllStudents(SortBy how,Class whichClass) =>instance.getAllStudents(how,whichClass);
   @override
   Future<void> updateStudent(Student student) =>instance.updateStudent(student);
   @override

@@ -30,6 +30,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
 	$rollCol	INTEGER NOT NULL UNIQUE,
 	$nameCol	TEXT,
 	$nOfClassesAttendedCol	INTEGER,
+	$classNameCol	TEXT,
 	PRIMARY KEY($rollCol AUTOINCREMENT) 
 );
           ''');
@@ -68,6 +69,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
       final db = await getDB();
       int id = await db.insert(tableName, {
         nameCol: newStudent.name,
+        classNameCol:newStudent.className,
       });
       log("INSERTED");
     } catch (e) {
@@ -93,13 +95,15 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
   @override
-  Future<List<Student>> getAllStudents(SortBy how) async {
+  Future<List<Student>> getAllStudents(SortBy how,Class whichClass) async {
     try {
       final db = await getDB();
       log("sorting by : ${how.name}");
       List<Map<String, dynamic>> li = await db.query(
         tableName,
         orderBy: how.name,
+        where: '$classNameCol=?',
+        whereArgs: [whichClass.class_name],
       ); //this has list<{"id":1,"name":"xyz",..}>
 
       // log(li.toString());

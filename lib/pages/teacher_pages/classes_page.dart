@@ -1,25 +1,28 @@
 import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/Widgets/appBar.dart';
 import 'package:attendance_app/data/database/students/service.dart';
+import 'package:attendance_app/pages/teacher_pages/attendance_page.dart';
 import 'package:flutter/material.dart';
 
-import '../data/models/classes_model/classes_model.dart';
+import '../../data/models/classes_model/classes_model.dart';
 
 class ClassesPage extends StatefulWidget {
-  const ClassesPage({super.key});
+  const ClassesPage({super.key, required this.service});
+  final StudentDBService service;
 
   @override
   State<ClassesPage> createState() => _ClassesPageState();
 }
 
 class _ClassesPageState extends State<ClassesPage> {
-  final service = StudentDBService();
+  late final service;
   final classNameController = TextEditingController();
   List<Class> classes = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    service=widget.service;
     fetchClasses();
   }
 
@@ -65,6 +68,9 @@ class _ClassesPageState extends State<ClassesPage> {
                     onLongPress: () async {
                       await service.deleteClass(curr);
                       setState(() {});
+                    },
+                    onTap: ()async{
+                      await Navigator.push(context, MaterialPageRoute(builder: (_)=>AttendancePage(thisClass: curr, service: service,)));
                     },
                   );
                 });
@@ -114,6 +120,7 @@ class _ClassesPageState extends State<ClassesPage> {
                 );
               });
         },
+        child: const Icon(Icons.add_box_outlined),
       ),
     );
   }

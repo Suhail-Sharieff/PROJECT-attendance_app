@@ -1,12 +1,14 @@
+import 'dart:developer';
+
 import 'package:attendance_app/Utils/percent_indicator.dart';
 import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/routes/routes_names.dart';
 import 'package:attendance_app/data/database/students/service.dart';
-import 'package:attendance_app/pages/teacher_pages/home_page.dart';
+import 'package:attendance_app/pages/common_pages/home_page.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/models/student_model/student_model.dart';
-import '../common_pages/attendance_page.dart';
+import '../teacher_pages/attendance_page.dart';
 
 class StudentProfilePage extends StatefulWidget {
   final Student student;
@@ -19,6 +21,14 @@ class StudentProfilePage extends StatefulWidget {
 }
 
 class _StudentProfilePageState extends State<StudentProfilePage> {
+   late final Student student;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    student=widget.student;
+    log("Student being viewed: $student");
+  }
   @override
   Widget build(BuildContext context) {
     final instance = widget.service;
@@ -41,10 +51,10 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                         context: context,
                         builder: (_) {
                           TextEditingController nameContr =
-                              TextEditingController(text: widget.student.name);
+                              TextEditingController(text: student.name);
                           TextEditingController attendContr =
                               TextEditingController(
-                                  text: widget.student.nOfClassesAttended
+                                  text: student.nOfClassesAttended
                                       .toString());
                           return AlertDialog(
                             title: const Text(
@@ -79,9 +89,10 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                     ElevatedButton(
                                         onPressed: () async {
                                           if(nameContr.text.isNotEmpty){
-                                            Student st = widget.student;
+                                            Student st = student;
                                             await instance.updateStudent(
                                                 st.copyWith(
+                                                  className: st.className,
                                                     roll: st.roll,
                                                     name: nameContr.text,
                                                     nOfClassesAttended: int.parse(
@@ -160,7 +171,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                       padding: const EdgeInsetsDirectional.fromSTEB(
                           0.0, 12.0, 0.0, 0.0),
                       child: Text(
-                        widget.student.name,
+                        student.name,
                         style: const TextStyle(
                           fontSize: 23,
                           fontWeight: FontWeight.bold,
@@ -175,7 +186,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                       child: Column(
                         children: [
                           Text(
-                            '${widget.student.className} ',
+                            '${student.className} ',
                             style: const TextStyle(
                               fontFamily: 'Inter',
                               letterSpacing: 0.0,
@@ -195,7 +206,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                     const SizedBox(height: 12),
                     //circular progress bar
                     MyPercentIndicator.circular(
-                        widget.student.nOfClassesAttended),
+                        student.nOfClassesAttended),
 
                     SizedBox.fromSize(
                       size: const Size.square(80),
@@ -213,7 +224,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                 builder: (_) {
                                   return AlertDialog(
                                     title: Text(
-                                      "Sure Delete ${widget.student.name} ?",
+                                      "Sure Delete ${student.name} ?",
                                       style: const TextStyle(fontSize: 20),
                                     ),
                                     content: Column(
@@ -224,7 +235,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                             ElevatedButton(
                                                 onPressed: () async {
                                                   await instance.deleteStudent(
-                                                      widget.student);
+                                                      student);
                                                   await MyToast.showToast(
                                                       "Delete Success",
                                                       Colors.green);

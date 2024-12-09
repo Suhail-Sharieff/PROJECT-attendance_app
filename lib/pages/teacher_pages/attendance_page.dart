@@ -9,30 +9,37 @@ import 'package:attendance_app/pages/student_pages/student_profile.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-class AttendancePage extends StatefulWidget {
-  const AttendancePage({super.key});
+import '../../data/models/classes_model/classes_model.dart';
 
+class AttendancePage extends StatefulWidget {
+  const AttendancePage({super.key, required this.thisClass, required this.service});
+  final Class thisClass;
+  final StudentDBService service;
   @override
   State<AttendancePage> createState() => _AttendancePageState();
 }
 
 class _AttendancePageState extends State<AttendancePage> {
-  final service = StudentDBService();
+  late final StudentDBService service;
   final TextEditingController nameContr = TextEditingController();
+  late final Class myClass;
   SortBy sortBy = SortBy.name;
-  String todaysDate='';
+  String todaysDate = '';
   List<Student> li = [];
 
   @override
   void initState() {
     super.initState();
+    service=widget.service;
     fetchData();
-    // Fetch initial data
-    todaysDate=service.getTodaysDate();
+    todaysDate = service.getTodaysDate();
+    myClass = widget.thisClass;
+    log("Class being viewed: $myClass");
   }
 
   Future<void> fetchData() async {
-    li = await service.getAllStudents(sortBy);
+    li = await service.getAllStudents(sortBy,myClass);
+    log(li.toString());
     await service.refresh();
   }
 
@@ -85,8 +92,8 @@ class _AttendancePageState extends State<AttendancePage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (li.isEmpty) {
-            return const Center(
-              child: Text("No Items Yet"),
+            return Center(
+              child: Text("No students added yet in ${myClass.class_name} !"),
             );
           }
           return ListView.builder(
@@ -150,7 +157,6 @@ class _AttendancePageState extends State<AttendancePage> {
                           ));
                         },
 
-
                         tileColor: Colors
                             .grey[50], // Add a background color to the tile
                         shape: RoundedRectangleBorder(
@@ -194,8 +200,9 @@ class _AttendancePageState extends State<AttendancePage> {
                           ElevatedButton(
                               onPressed: () async {
                                 if (nameContr.text.isNotEmpty) {
-                                  await service.addStudent(
-                                      Student(name: nameContr.text));
+                                  await service.addStudent(Student(
+                                      name: nameContr.text,
+                                      className: myClass.class_name));
                                   await MyToast.showToast(
                                       "Added ${nameContr.text}", Colors.green);
                                   Navigator.of(context).pop();
