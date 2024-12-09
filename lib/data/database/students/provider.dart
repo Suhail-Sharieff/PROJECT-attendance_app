@@ -43,6 +43,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         $rollCol INTEGER,
         $isPresentCol INTEGER,
         $dateCol TEXT,
+        $classNameCol TEXT,
         FOREIGN KEY($rollCol) REFERENCES $tableName($rollCol)
         );
       '''
@@ -176,7 +177,8 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         {
           rollCol:student.roll,
           isPresentCol:1,
-          dateCol:date
+          dateCol:date,
+          classNameCol:student.className,
         }
         );
         //increase classes attended in students table
@@ -227,7 +229,6 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
 
-  //utilities functions:
 
   //this will tell me if that student has attendance on curr day:
   Future<bool>attendanceTableHasAttendanceForTodayOf(Student student)async{
@@ -245,25 +246,27 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
   @override
-  Future<void> refresh() async{
+  Future<void> refresh(Class forWhichClass) async{
     try {
       final db=await getDB();
       final String ddmmyyyy=getTodaysDate();
       //mark everyone not present only if none of student has attendance on today:
       final existingRecord = await db.query(
         attendanceTable,
-        where: '$dateCol = ?',
-        whereArgs: [ddmmyyyy],
+        where: '$dateCol = ? AND $classNameCol=?',
+        whereArgs: [ddmmyyyy,forWhichClass.class_name],
       );
      if(existingRecord.isEmpty){
        await db.update(attendanceTable,
            {
              isPresentCol:0,
-           }
+           },
+         where: '$classNameCol=?',
+         whereArgs: [forWhichClass.class_name],
        );
-       log("UPDATED ALL TO NOT ATTENDED");
+       log("UPDATED ALL TO NOT ATTENDED FOR THE CLASS ${forWhichClass.class_name}");
      }else{
-       log("ATTENDANCE TAKEN ALREADY ON THAT DATE");
+       log("ATTENDANCE TAKEN ALREADY ON THAT DATE FOR ${forWhichClass.class_name}");
      }
     } catch (e) {
       log(e.toString());

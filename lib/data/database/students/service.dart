@@ -21,7 +21,7 @@ class StudentDBService implements StudentDBAbstractProvider{
   @override
   Future<void> markStudent(Student student) =>instance.markStudent(student);
   @override
-  Future<void> refresh() =>instance.refresh();
+  Future<void> refresh(Class forWhichClass) =>instance.refresh(forWhichClass);
   @override
   String getTodaysDate()=>instance.getTodaysDate();
   @override

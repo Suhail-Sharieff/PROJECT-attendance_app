@@ -30,17 +30,17 @@ class _AttendancePageState extends State<AttendancePage> {
   @override
   void initState() {
     super.initState();
+    myClass = widget.thisClass;
     service=widget.service;
     fetchData();
     todaysDate = service.getTodaysDate();
-    myClass = widget.thisClass;
     log("Class being viewed: $myClass");
   }
 
   Future<void> fetchData() async {
     li = await service.getAllStudents(sortBy,myClass);
-    log(li.toString());
-    await service.refresh();
+    log("CLASS ${myClass.class_name} DATA: ${li.toString()}");
+    await service.refresh(myClass);
   }
 
   Future<bool> isStudentPresentToday(Student student) async {

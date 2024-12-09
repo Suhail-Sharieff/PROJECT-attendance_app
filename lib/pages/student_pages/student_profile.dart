@@ -21,14 +21,15 @@ class StudentProfilePage extends StatefulWidget {
 }
 
 class _StudentProfilePageState extends State<StudentProfilePage> {
-   late final Student student;
+  late final Student student;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    student=widget.student;
+    student = widget.student;
     log("Student being viewed: $student");
   }
+
   @override
   Widget build(BuildContext context) {
     final instance = widget.service;
@@ -54,8 +55,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                               TextEditingController(text: student.name);
                           TextEditingController attendContr =
                               TextEditingController(
-                                  text: student.nOfClassesAttended
-                                      .toString());
+                                  text: student.nOfClassesAttended.toString());
                           return AlertDialog(
                             title: const Text(
                               "Edit Student Data",
@@ -88,15 +88,16 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                   children: [
                                     ElevatedButton(
                                         onPressed: () async {
-                                          if(nameContr.text.isNotEmpty){
+                                          if (nameContr.text.isNotEmpty) {
                                             Student st = student;
                                             await instance.updateStudent(
                                                 st.copyWith(
-                                                  className: st.className,
+                                                    className: st.className,
                                                     roll: st.roll,
                                                     name: nameContr.text,
-                                                    nOfClassesAttended: int.parse(
-                                                        attendContr.text)));
+                                                    nOfClassesAttended:
+                                                        int.parse(
+                                                            attendContr.text)));
                                             await MyToast.showToast(
                                                 "Updated Successfully",
                                                 Colors.green);
@@ -106,12 +107,14 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                 .pushAndRemoveUntil(
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                  const HomePage()),
-                                                  (Route<dynamic> route) =>
-                                              false, // Remove all previous routes
+                                                      const HomePage()),
+                                              (Route<dynamic> route) =>
+                                                  false, // Remove all previous routes
                                             );
-                                          }else{
-                                            await MyToast.showErrorMsg("Name cannot be empty !", context);
+                                          } else {
+                                            await MyToast.showErrorMsg(
+                                                "Name cannot be empty !",
+                                                context);
                                           }
                                         },
                                         child: const Text("Update")),
@@ -162,9 +165,19 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16.0),
                       ),
-                      child:  Padding(
+                      child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: CircleAvatar(foregroundColor:Colors.blueAccent,backgroundColor: Colors.white,child: Text('${widget.student.roll}',style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 40,),),),
+                        child: CircleAvatar(
+                          foregroundColor: Colors.blueAccent,
+                          backgroundColor: Colors.white,
+                          child: Text(
+                            '${widget.student.roll}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     Padding(
@@ -205,8 +218,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                   children: [
                     const SizedBox(height: 12),
                     //circular progress bar
-                    MyPercentIndicator.circular(
-                        student.nOfClassesAttended),
+                    MyPercentIndicator.circular(student.nOfClassesAttended),
 
                     SizedBox.fromSize(
                       size: const Size.square(80),
@@ -234,8 +246,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                           children: [
                                             ElevatedButton(
                                                 onPressed: () async {
-                                                  await instance.deleteStudent(
-                                                      student);
+                                                  await instance
+                                                      .deleteStudent(student);
                                                   await MyToast.showToast(
                                                       "Delete Success",
                                                       Colors.green);
