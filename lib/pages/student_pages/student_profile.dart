@@ -7,14 +7,19 @@ import 'package:attendance_app/data/database/students/service.dart';
 import 'package:attendance_app/pages/common_pages/home_page.dart';
 import 'package:flutter/material.dart';
 
+import '../../data/models/classes_model/classes_model.dart';
 import '../../data/models/student_model/student_model.dart';
 import '../teacher_pages/attendance_page.dart';
 
 class StudentProfilePage extends StatefulWidget {
   final Student student;
   final StudentDBService service;
+  final Class hisClass;
   const StudentProfilePage(
-      {super.key, required this.student, required this.service});
+      {super.key,
+      required this.student,
+      required this.service,
+      required this.hisClass});
 
   @override
   State<StudentProfilePage> createState() => _StudentProfilePageState();
@@ -218,7 +223,17 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                   children: [
                     const SizedBox(height: 12),
                     //circular progress bar
-                    MyPercentIndicator.circular(student.nOfClassesAttended),
+                    FutureBuilder(
+                        future: instance.nOfClassesTakenFor(widget.hisClass),
+                        builder: (s, c) {
+                          if (c.connectionState == ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return MyPercentIndicator.circular(
+                              student.nOfClassesAttended / c.data!);
+                        }),
 
                     SizedBox.fromSize(
                       size: const Size.square(80),

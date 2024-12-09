@@ -31,6 +31,9 @@ class StudentDBService implements StudentDBAbstractProvider{
   @override
   Future<List<Class>> getAllClasses() =>instance.getAllClasses();
 
+  @override
+  Future<int> nOfClassesTakenFor(Class c)=>instance.nOfClassesTakenFor(c);
+
 
 
 

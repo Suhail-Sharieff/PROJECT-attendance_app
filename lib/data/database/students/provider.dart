@@ -319,6 +319,20 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     }
   }
 
+  @override
+  Future<int> nOfClassesTakenFor(Class c) async{
+    try{
+      final db=await getDB();
+      final queries=await db.query(attendanceTable,
+      where: '$classNameCol=?',
+        whereArgs: [c.class_name],
+      );
+      return queries.length;
+    }catch(e){
+      throw Exception("COULDN'T GET NUMBER OF CLASSES TAKEN FOR ${c.class_name}");
+    }
+  }
+
 
 
 }

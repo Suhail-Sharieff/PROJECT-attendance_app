@@ -141,18 +141,22 @@ class _AttendancePageState extends State<AttendancePage> {
                             color: Colors.black,
                           ),
                         ),
-                        subtitle: Text(
-                          'Attended: ${st.nOfClassesAttended}',
+                        subtitle: FutureBuilder(future:service.nOfClassesTakenFor(myClass) , builder: (c,s){
+                          if(s.connectionState==ConnectionState.waiting) return const Center(child: CircularProgressIndicator(),);
+                          return Text(
+                          'Attended: ${st.nOfClassesAttended}/${s.data!}',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[700],
                           ),
-                        ),
+                          );
+                        }),
                         onLongPress: () async {
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (_) => StudentProfilePage(
                               student: st,
                               service: service,
+                              hisClass: myClass,
                             ),
                           ));
                         },

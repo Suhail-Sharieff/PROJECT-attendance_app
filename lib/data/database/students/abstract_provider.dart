@@ -12,8 +12,8 @@ abstract class StudentDBAbstractProvider{
   Future<void>markStudent(Student student);
   Future<void>refresh(Class forWhichClass);
   String getTodaysDate();
-
   Future<void>addClass(Class newClass);
   Future<List<Class>>getAllClasses();
   Future<void>deleteClass(Class c);
+  Future<int>nOfClassesTakenFor(Class c);
 }
