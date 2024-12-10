@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:attendance_app/Utils/percent_indicator.dart';
 import 'package:attendance_app/Utils/toast.dart';
-import 'package:attendance_app/constants/routes/routes_names.dart';
 import 'package:attendance_app/data/database/students/constants.dart';
 import 'package:attendance_app/data/database/students/service.dart';
 import 'package:attendance_app/pages/common_pages/home_page.dart';
@@ -10,7 +9,6 @@ import 'package:flutter/material.dart';
 
 import '../../data/models/classes_model/classes_model.dart';
 import '../../data/models/student_model/student_model.dart';
-import '../teacher_pages/attendance_page.dart';
 
 class StudentProfilePage extends StatefulWidget {
 

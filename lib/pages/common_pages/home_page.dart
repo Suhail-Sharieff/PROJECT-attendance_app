@@ -2,6 +2,7 @@ import 'package:attendance_app/data/database/students/service.dart';
 import 'package:attendance_app/pages/common_pages/MorePage.dart';
 import 'package:attendance_app/pages/common_pages/analytics_page.dart';
 import 'package:attendance_app/pages/teacher_pages/attendance_page.dart';
+import 'package:attendance_app/pages/teacher_pages/calendar_page.dart';
 import 'package:attendance_app/pages/teacher_pages/classes_page.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +27,7 @@ NavigationBar nb(int currentPageIndex,Function(int) onChange) {
       ),
 
       NavigationDestination(
-        icon: Icon(Icons.more_horiz),
+        icon: Icon(Icons.calendar_month_sharp),
         label: 'More',
       ),
     ],
@@ -61,7 +62,7 @@ class _HomePageState extends State<HomePage> {
     pages = [
       ClassesPage(service: service),
       const AnalyticsPage(),
-      const MorePage(),
+      const ClassesCalendar(),
     ];
   }
 

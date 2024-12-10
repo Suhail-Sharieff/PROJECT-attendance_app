@@ -287,6 +287,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
           }
       );
     }catch(e){
+      log(e.toString());
       throw CouldntReadClassesException();
     }
   }

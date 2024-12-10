@@ -1,13 +1,10 @@
-import 'package:attendance_app/pages/teacher_pages/classes_page.dart';
 import 'package:attendance_app/pages/common_pages/MorePage.dart';
 import 'package:attendance_app/pages/common_pages/analytics_page.dart';
-import 'package:attendance_app/pages/teacher_pages/attendance_page.dart';
 import 'package:attendance_app/pages/common_pages/home_page.dart';
 import 'package:attendance_app/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'constants/routes/routes_names.dart';
-import 'data/models/classes_model/classes_model.dart';
 
 void main() {
   runApp(const MyApp());
