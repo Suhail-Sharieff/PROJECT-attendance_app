@@ -60,7 +60,9 @@ class StudentDBProvider implements StudentDBAbstractProvider {
       ''' 
         CREATE TABLE IF NOT EXISTS $scheduleTable (
         $scheduleIDcol INTEGER PRIMARY KEY AUTOINCREMENT,
-        $scheduledClassCol TEXT
+        $scheduledClassCol TEXT,
+        $dateCol TEXT,
+        $scheduledTimeCol TEXT
         );
       '''
     );
@@ -339,6 +341,58 @@ class StudentDBProvider implements StudentDBAbstractProvider {
       return queries.length;
     }catch(e){
       throw Exception("COULDN'T GET NUMBER OF CLASSES TAKEN FOR ${c.class_name}");
+    }
+  }
+
+  @override
+  Future<void> addSchedule(Class c,String ddmmyy,String time) async{
+      try{
+        final db=await getDB();
+        log("TRYING TO ADD : $c AT $ddmmyy AT $time");
+        await db.insert(scheduleTable,
+          {
+            scheduledClassCol:c.class_name,
+            dateCol:ddmmyy,
+            scheduledTimeCol:time,
+          }
+        );
+      }catch(e){
+        log(e.toString());
+        throw CouldntAddScheduleException();
+      }
+  }
+
+  @override
+  Future<void> deleteSchedule(Class c,String ddmmyy,String time) async{
+    try{
+      final db=await getDB();
+      await db.delete(scheduleTable,
+          where: '$classNameCol=? AND $dateCol=? AND $scheduledTimeCol=?',
+        whereArgs: [c.class_name,ddmmyy,time]
+      );
+    }catch(e){
+      log(e.toString());
+      throw CouldntDeleteScheduleException();
+    }
+  }
+
+  @override
+  Future<List<Class>> getAllScheduledClasses(String ddmmyy) async{
+    try{
+      final db=await getDB();
+      final List<Map<String,dynamic>>onThatDay=await db.query(scheduleTable,
+          where: '$dateCol=?',
+          whereArgs: [ddmmyy]
+      );
+      return List.generate(
+        onThatDay.length,
+          (i){
+            return Class.fromJson(onThatDay[i]);
+          }
+      );
+    }catch(e){
+      log(e.toString());
+      throw CouldntReadSchedulesException();
     }
   }
 

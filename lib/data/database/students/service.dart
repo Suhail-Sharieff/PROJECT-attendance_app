@@ -34,6 +34,15 @@ class StudentDBService implements StudentDBAbstractProvider{
   @override
   Future<int> nOfClassesTakenFor(Class c)=>instance.nOfClassesTakenFor(c);
 
+  @override
+  Future<void> addSchedule(Class c, String ddmmyy, String time)=>instance.addSchedule(c, ddmmyy, time);
+
+  @override
+  Future<void> deleteSchedule(Class c, String ddmmyy, String time)=>instance.deleteSchedule(c, ddmmyy, time);
+
+  @override
+  Future<List<Class>> getAllScheduledClasses(String ddmmyy)=>instance.getAllScheduledClasses(ddmmyy);
+
 
 
 

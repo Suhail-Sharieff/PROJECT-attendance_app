@@ -1,5 +1,5 @@
 import 'package:attendance_app/data/database/students/service.dart';
-import 'package:attendance_app/pages/common_pages/MorePage.dart';
+import 'package:attendance_app/pages/common_pages/calendar_page.dart';
 import 'package:attendance_app/pages/common_pages/analytics_page.dart';
 import 'package:attendance_app/pages/teacher_pages/attendance_page.dart';
 import 'package:attendance_app/pages/teacher_pages/calendar_page.dart';
@@ -28,7 +28,7 @@ NavigationBar nb(int currentPageIndex,Function(int) onChange) {
 
       NavigationDestination(
         icon: Icon(Icons.calendar_month_sharp),
-        label: 'More',
+        label: 'Schedule',
       ),
     ],
   );

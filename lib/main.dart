@@ -1,4 +1,4 @@
-import 'package:attendance_app/pages/common_pages/MorePage.dart';
+import 'package:attendance_app/pages/common_pages/calendar_page.dart';
 import 'package:attendance_app/pages/common_pages/analytics_page.dart';
 import 'package:attendance_app/pages/common_pages/home_page.dart';
 import 'package:attendance_app/splash_screen.dart';
