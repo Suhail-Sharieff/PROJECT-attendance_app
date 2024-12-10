@@ -26,7 +26,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     final dbPath = join(storeDir, dbName);
     final db = await openDatabase(dbPath, version: 1, onCreate: (db, version) {
       db.execute('''
-  CREATE TABLE IF NOT EXISTS $tableName(
+  CREATE TABLE IF NOT EXISTS $studentsTable(
 	$rollCol	INTEGER NOT NULL UNIQUE,
 	$nameCol	TEXT,
 	$nOfClassesAttendedCol	INTEGER,
@@ -44,7 +44,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         $isPresentCol INTEGER,
         $dateCol TEXT,
         $classNameCol TEXT,
-        FOREIGN KEY($rollCol) REFERENCES $tableName($rollCol)
+        FOREIGN KEY($rollCol) REFERENCES $studentsTable($rollCol)
         );
       '''
     );
@@ -53,6 +53,14 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         CREATE TABLE IF NOT EXISTS $classesTable (
         $classIDcol INTEGER PRIMARY KEY AUTOINCREMENT,
         $classNameCol TEXT
+        );
+      '''
+    );
+    await db.execute(
+      ''' 
+        CREATE TABLE IF NOT EXISTS $scheduleTable (
+        $scheduleIDcol INTEGER PRIMARY KEY AUTOINCREMENT,
+        $scheduledClassCol TEXT
         );
       '''
     );
@@ -68,7 +76,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   Future<void> addStudent(Student newStudent) async {
     try {
       final db = await getDB();
-      int id = await db.insert(tableName, {
+      int id = await db.insert(studentsTable, {
         nameCol: newStudent.name,
         classNameCol:newStudent.className,
       });
@@ -84,7 +92,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   Future<void> deleteStudent(Student student) async {
     try {
       final db = await getDB();
-      await db.delete(tableName, where: '$rollCol = ?', whereArgs: [
+      await db.delete(studentsTable, where: '$rollCol = ?', whereArgs: [
         student.roll,
       ]);
       log("DELETED");
@@ -101,7 +109,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
       final db = await getDB();
       log("sorting by : ${how.name}");
       List<Map<String, dynamic>> li = await db.query(
-        tableName,
+        studentsTable,
         orderBy: how.name,
         where: '$classNameCol=?',
         whereArgs: [whichClass.class_name],
@@ -123,7 +131,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     try {
       final db = await getDB();
       await db.update(
-          tableName,
+          studentsTable,
           {
             nameCol: student.name,
             nOfClassesAttendedCol: student.nOfClassesAttended,
@@ -164,7 +172,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
           whereArgs: [student.roll,date]
         );
         //now lets decrement nOfAttended in students table fro that student
-        await db.update(tableName,
+        await db.update(studentsTable,
         {
           nOfClassesAttendedCol:student.nOfClassesAttended-1
         },
@@ -182,7 +190,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         }
         );
         //increase classes attended in students table
-        await db.update(tableName,
+        await db.update(studentsTable,
         {
           nOfClassesAttendedCol:student.nOfClassesAttended+1
         },

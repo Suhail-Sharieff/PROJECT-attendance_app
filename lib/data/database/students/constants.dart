@@ -1,6 +1,6 @@
 const dbName = 'app.db';
 
-const tableName = 'studentsTable';
+const studentsTable = 'studentsTable';
 
 //each student has roll,name,nOfClassesAttended,marks map
 const rollCol = 'roll';
@@ -18,3 +18,8 @@ const isPresentCol = 'isPresentThatDay';
 const classesTable='classesTable';
 const classIDcol='class_ID';
 const classNameCol='class_name';
+
+//for schedules:
+const scheduleTable='scheduleTable';
+const scheduleIDcol='schedule_ID';
+const scheduledClassCol='scheduled_Class';
