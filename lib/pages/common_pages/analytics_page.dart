@@ -38,34 +38,38 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(title: "Overall Analysis"),
-        body: FutureBuilder(future: fetchClasses(), builder: (c,s){
-          if(s.connectionState==ConnectionState.waiting){
-            return Center(child:CircularProgressIndicator(),);
-          }
-          return Center(
-              child: Container(
-                  height: 500,
-                  child: SfCartesianChart(
-                    legend: Legend(isVisible: true),
-                    // Initialize category axis
-                    title: ChartTitle(text: 'Half yearly sales analysis'),
-                    primaryXAxis: CategoryAxis(),
-                    series: [
-                      // Initialize line series
-                      FastLineSeries<Student, String>(
-                        enableTooltip: true,gradient: LinearGradient(colors: [Colors.red,Colors.green,Colors.blue]),
-                        dataSource: list,
-                        xValueMapper: (Student e, _) => e.name,
-                        yValueMapper: (Student e, _) => e.nOfClassesAttended,
-                        dataLabelSettings: const DataLabelSettings(isVisible: true),
-                        name: "Attendance",
-                      )
-                    ],
+        body: Column(
+          children: [
+            FutureBuilder(future: fetchClasses(), builder: (c,s){
+              if(s.connectionState==ConnectionState.waiting){
+                return Center(child:CircularProgressIndicator(),);
+              }
+              return Center(
+                  child: Container(
+                      height: 500,
+                      child: SfCartesianChart(
+                        legend: Legend(isVisible: true),
+                        // Initialize category axis
+                        title: ChartTitle(text: 'Half yearly sales analysis'),
+                        primaryXAxis: CategoryAxis(),
+                        series: [
+                          // Initialize line series
+                          FastLineSeries<Student, String>(
+                            enableTooltip: true,gradient: LinearGradient(colors: [Colors.red,Colors.green,Colors.blue]),
+                            dataSource: list,
+                            xValueMapper: (Student e, _) => e.name,
+                            yValueMapper: (Student e, _) => e.nOfClassesAttended,
+                            dataLabelSettings: const DataLabelSettings(isVisible: true),
+                            name: "Attendance",
+                          )
+                        ],
 
+                      )
                   )
-              )
-          );
-        })
+              );
+            }),
+          ],
+        )
     );
   }
 }
