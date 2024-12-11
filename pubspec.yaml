@@ -58,7 +58,6 @@ dependencies:
 
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
-  syncfusion_flutter_calendar: ^27.2.5
 
 dev_dependencies:
   flutter_test:
