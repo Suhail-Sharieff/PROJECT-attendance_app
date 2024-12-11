@@ -4,6 +4,7 @@ import 'package:attendance_app/constants/enums/sort_by.dart';
 import 'package:attendance_app/data/database/students/abstract_provider.dart';
 import 'package:attendance_app/data/database/students/exceptions.dart';
 import 'package:attendance_app/data/models/classes_model/classes_model.dart';
+import 'package:attendance_app/data/models/schedule_model/schedule.dart';
 import 'package:attendance_app/data/models/student_model/student_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -346,18 +347,18 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
   @override
-  Future<void> addSchedule(Class c,String ddmmyy,String from,String to) async{
+  Future<void> addSchedule(Schedule sh) async{
       try{
         final db=await getDB();
-        log("TRYING TO ADD : $c AT $ddmmyy FROM $from to $to");
-        await db.insert(scheduleTable,
-          {
-            scheduledClassCol:c.class_name,
-            dateCol:ddmmyy,
-            scheduledFromTimeCol:from,
-            scheduledToTimeCol:to,
-          }
-        );
+        // log("TRYING TO ADD : $c AT $ddmmyy FROM $from to $to");
+        // await db.insert(scheduleTable,
+        //   {
+        //     scheduledClassCol:c.class_name,
+        //     dateCol:ddmmyy,
+        //     scheduledFromTimeCol:from,
+        //     scheduledToTimeCol:to,
+        //   }
+        // );
       }catch(e){
         log(e.toString());
         throw CouldntAddScheduleException();
@@ -365,13 +366,13 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
   @override
-  Future<void> deleteSchedule(Class c,String ddmmyy,String from,String to) async{
+  Future<void> deleteSchedule(Schedule sh) async{
     try{
       final db=await getDB();
-      await db.delete(scheduleTable,
-          where: '$classNameCol=? AND $dateCol=? AND $scheduledFromTimeCol=? AND $scheduledToTimeCol=?',
-        whereArgs: [c.class_name,ddmmyy,from,to]
-      );
+      // await db.delete(scheduleTable,
+      //     where: '$classNameCol=? AND $dateCol=? AND $scheduledFromTimeCol=? AND $scheduledToTimeCol=?',
+      //   whereArgs: [c.class_name,ddmmyy,from,to]
+      // );
     }catch(e){
       log(e.toString());
       throw CouldntDeleteScheduleException();

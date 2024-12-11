@@ -24,6 +24,8 @@ mixin _$Schedule {
   int get id => throw _privateConstructorUsedError;
   @JsonKey(name: scheduledClassCol)
   String get scheduled_class_name => throw _privateConstructorUsedError;
+  @JsonKey(name: dateCol)
+  String get scheduled_date => throw _privateConstructorUsedError;
   @JsonKey(name: scheduledFromTimeCol)
   String get scheduled_from => throw _privateConstructorUsedError;
   @JsonKey(name: scheduledToTimeCol)
@@ -47,6 +49,7 @@ abstract class $ScheduleCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: scheduleIDcol) int id,
       @JsonKey(name: scheduledClassCol) String scheduled_class_name,
+      @JsonKey(name: dateCol) String scheduled_date,
       @JsonKey(name: scheduledFromTimeCol) String scheduled_from,
       @JsonKey(name: scheduledToTimeCol) String scheduled_to});
 }
@@ -68,6 +71,7 @@ class _$ScheduleCopyWithImpl<$Res, $Val extends Schedule>
   $Res call({
     Object? id = null,
     Object? scheduled_class_name = null,
+    Object? scheduled_date = null,
     Object? scheduled_from = null,
     Object? scheduled_to = null,
   }) {
@@ -79,6 +83,10 @@ class _$ScheduleCopyWithImpl<$Res, $Val extends Schedule>
       scheduled_class_name: null == scheduled_class_name
           ? _value.scheduled_class_name
           : scheduled_class_name // ignore: cast_nullable_to_non_nullable
+              as String,
+      scheduled_date: null == scheduled_date
+          ? _value.scheduled_date
+          : scheduled_date // ignore: cast_nullable_to_non_nullable
               as String,
       scheduled_from: null == scheduled_from
           ? _value.scheduled_from
@@ -103,6 +111,7 @@ abstract class _$$ScheduleImplCopyWith<$Res>
   $Res call(
       {@JsonKey(name: scheduleIDcol) int id,
       @JsonKey(name: scheduledClassCol) String scheduled_class_name,
+      @JsonKey(name: dateCol) String scheduled_date,
       @JsonKey(name: scheduledFromTimeCol) String scheduled_from,
       @JsonKey(name: scheduledToTimeCol) String scheduled_to});
 }
@@ -122,6 +131,7 @@ class __$$ScheduleImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? scheduled_class_name = null,
+    Object? scheduled_date = null,
     Object? scheduled_from = null,
     Object? scheduled_to = null,
   }) {
@@ -133,6 +143,10 @@ class __$$ScheduleImplCopyWithImpl<$Res>
       scheduled_class_name: null == scheduled_class_name
           ? _value.scheduled_class_name
           : scheduled_class_name // ignore: cast_nullable_to_non_nullable
+              as String,
+      scheduled_date: null == scheduled_date
+          ? _value.scheduled_date
+          : scheduled_date // ignore: cast_nullable_to_non_nullable
               as String,
       scheduled_from: null == scheduled_from
           ? _value.scheduled_from
@@ -152,6 +166,7 @@ class _$ScheduleImpl implements _Schedule {
   _$ScheduleImpl(
       {@JsonKey(name: scheduleIDcol) this.id = -1,
       @JsonKey(name: scheduledClassCol) this.scheduled_class_name = 'no name',
+      @JsonKey(name: dateCol) this.scheduled_date = 'no-date',
       @JsonKey(name: scheduledFromTimeCol) this.scheduled_from = 'from-time',
       @JsonKey(name: scheduledToTimeCol) this.scheduled_to = 'to-time'});
 
@@ -165,6 +180,9 @@ class _$ScheduleImpl implements _Schedule {
   @JsonKey(name: scheduledClassCol)
   final String scheduled_class_name;
   @override
+  @JsonKey(name: dateCol)
+  final String scheduled_date;
+  @override
   @JsonKey(name: scheduledFromTimeCol)
   final String scheduled_from;
   @override
@@ -173,7 +191,7 @@ class _$ScheduleImpl implements _Schedule {
 
   @override
   String toString() {
-    return 'Schedule(id: $id, scheduled_class_name: $scheduled_class_name, scheduled_from: $scheduled_from, scheduled_to: $scheduled_to)';
+    return 'Schedule(id: $id, scheduled_class_name: $scheduled_class_name, scheduled_date: $scheduled_date, scheduled_from: $scheduled_from, scheduled_to: $scheduled_to)';
   }
 
   @override
@@ -184,6 +202,8 @@ class _$ScheduleImpl implements _Schedule {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.scheduled_class_name, scheduled_class_name) ||
                 other.scheduled_class_name == scheduled_class_name) &&
+            (identical(other.scheduled_date, scheduled_date) ||
+                other.scheduled_date == scheduled_date) &&
             (identical(other.scheduled_from, scheduled_from) ||
                 other.scheduled_from == scheduled_from) &&
             (identical(other.scheduled_to, scheduled_to) ||
@@ -192,8 +212,8 @@ class _$ScheduleImpl implements _Schedule {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, scheduled_class_name, scheduled_from, scheduled_to);
+  int get hashCode => Object.hash(runtimeType, id, scheduled_class_name,
+      scheduled_date, scheduled_from, scheduled_to);
 
   /// Create a copy of Schedule
   /// with the given fields replaced by the non-null parameter values.
@@ -215,6 +235,7 @@ abstract class _Schedule implements Schedule {
   factory _Schedule(
           {@JsonKey(name: scheduleIDcol) final int id,
           @JsonKey(name: scheduledClassCol) final String scheduled_class_name,
+          @JsonKey(name: dateCol) final String scheduled_date,
           @JsonKey(name: scheduledFromTimeCol) final String scheduled_from,
           @JsonKey(name: scheduledToTimeCol) final String scheduled_to}) =
       _$ScheduleImpl;
@@ -228,6 +249,9 @@ abstract class _Schedule implements Schedule {
   @override
   @JsonKey(name: scheduledClassCol)
   String get scheduled_class_name;
+  @override
+  @JsonKey(name: dateCol)
+  String get scheduled_date;
   @override
   @JsonKey(name: scheduledFromTimeCol)
   String get scheduled_from;

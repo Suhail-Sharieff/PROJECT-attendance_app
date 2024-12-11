@@ -2,6 +2,7 @@ import 'package:attendance_app/constants/enums/sort_by.dart';
 import 'package:attendance_app/data/database/students/abstract_provider.dart';
 import 'package:attendance_app/data/database/students/provider.dart';
 import 'package:attendance_app/data/models/classes_model/classes_model.dart';
+import 'package:attendance_app/data/models/schedule_model/schedule.dart';
 import 'package:attendance_app/data/models/student_model/student_model.dart';
 
 class StudentDBService implements StudentDBAbstractProvider {
@@ -67,10 +68,10 @@ class StudentDBService implements StudentDBAbstractProvider {
       instance.getAllScheduledClasses(ddmmyy);
 
   @override
-  Future<void> addSchedule(Class c, String ddmmyy, String from, String to) =>
-      instance.addSchedule(c, ddmmyy, from, to);
+  Future<void> addSchedule(Schedule sh) =>instance.addSchedule(sh);
 
   @override
-  Future<void> deleteSchedule(Class c, String ddmmyy, String from, String to) =>
-      instance.deleteSchedule(c, ddmmyy, from, to);
+  Future<void> deleteSchedule(Schedule sh) =>instance.deleteSchedule(sh);
+
+
 }

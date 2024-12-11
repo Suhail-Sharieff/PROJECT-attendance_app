@@ -1,5 +1,6 @@
 import 'package:attendance_app/constants/enums/sort_by.dart';
 import 'package:attendance_app/data/models/classes_model/classes_model.dart';
+import 'package:attendance_app/data/models/schedule_model/schedule.dart';
 import 'package:attendance_app/data/models/student_model/student_model.dart';
 
 abstract class StudentDBAbstractProvider{
@@ -16,7 +17,7 @@ abstract class StudentDBAbstractProvider{
   Future<List<Class>>getAllClasses();
   Future<void>deleteClass(Class c);
   Future<int>nOfClassesTakenFor(Class c);
-  Future<void>addSchedule(Class c, String ddmmmyy,String from,String to);
-  Future<void>deleteSchedule(Class c,String ddmmyy,String from,String to);
+  Future<void>addSchedule(Schedule sh);
+  Future<void>deleteSchedule(Schedule sh);
   Future<List<Class>>getAllScheduledClasses(String ddmmyy);
 }
