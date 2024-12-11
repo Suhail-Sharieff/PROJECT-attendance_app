@@ -64,8 +64,8 @@ class StudentDBService implements StudentDBAbstractProvider {
   Future<int> nOfClassesTakenFor(Class c) => instance.nOfClassesTakenFor(c);
 
   @override
-  Future<List<Class>> getAllScheduledClasses(String ddmmyy) =>
-      instance.getAllScheduledClasses(ddmmyy);
+  Future<List<Schedule>> getAllSchedulesOn(String ddmmyy) =>
+      instance.getAllSchedulesOn(ddmmyy);
 
   @override
   Future<void> addSchedule(Schedule sh) =>instance.addSchedule(sh);

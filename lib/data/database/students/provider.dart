@@ -350,15 +350,15 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   Future<void> addSchedule(Schedule sh) async{
       try{
         final db=await getDB();
-        // log("TRYING TO ADD : $c AT $ddmmyy FROM $from to $to");
-        // await db.insert(scheduleTable,
-        //   {
-        //     scheduledClassCol:c.class_name,
-        //     dateCol:ddmmyy,
-        //     scheduledFromTimeCol:from,
-        //     scheduledToTimeCol:to,
-        //   }
-        // );
+        log("TRYING TO ADD : $sh");
+        await db.insert(scheduleTable,
+          {
+            scheduledClassCol:sh.scheduled_class_name,
+            dateCol:sh.scheduled_date,
+            scheduledFromTimeCol:sh.scheduled_from,
+            scheduledToTimeCol:sh.scheduled_to,
+          }
+        );
       }catch(e){
         log(e.toString());
         throw CouldntAddScheduleException();
@@ -369,10 +369,10 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   Future<void> deleteSchedule(Schedule sh) async{
     try{
       final db=await getDB();
-      // await db.delete(scheduleTable,
-      //     where: '$classNameCol=? AND $dateCol=? AND $scheduledFromTimeCol=? AND $scheduledToTimeCol=?',
-      //   whereArgs: [c.class_name,ddmmyy,from,to]
-      // );
+      await db.delete(scheduleTable,
+          where: '$classNameCol=? AND $dateCol=? AND $scheduledFromTimeCol=? AND $scheduledToTimeCol=?',
+        whereArgs: [sh.scheduled_class_name,sh.scheduled_date,sh.scheduled_from,sh.scheduled_to]
+      );
     }catch(e){
       log(e.toString());
       throw CouldntDeleteScheduleException();
@@ -380,7 +380,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
   @override
-  Future<List<Class>> getAllScheduledClasses(String ddmmyy) async{
+  Future<List<Schedule>> getAllSchedulesOn(String ddmmyy) async{
     try{
       final db=await getDB();
       final List<Map<String,dynamic>>onThatDay=await db.query(scheduleTable,
@@ -390,7 +390,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
       return List.generate(
         onThatDay.length,
           (i){
-            return Class.fromJson(onThatDay[i]);
+            return Schedule.fromJson(onThatDay[i]);
           }
       );
     }catch(e){

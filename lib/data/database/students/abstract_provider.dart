@@ -19,5 +19,5 @@ abstract class StudentDBAbstractProvider{
   Future<int>nOfClassesTakenFor(Class c);
   Future<void>addSchedule(Schedule sh);
   Future<void>deleteSchedule(Schedule sh);
-  Future<List<Class>>getAllScheduledClasses(String ddmmyy);
+  Future<List<Schedule>>getAllSchedulesOn(String ddmmyy);
 }
