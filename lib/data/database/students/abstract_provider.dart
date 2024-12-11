@@ -16,7 +16,7 @@ abstract class StudentDBAbstractProvider{
   Future<List<Class>>getAllClasses();
   Future<void>deleteClass(Class c);
   Future<int>nOfClassesTakenFor(Class c);
-  Future<void>addSchedule(Class c, String ddmmmyy,String time);
-  Future<void>deleteSchedule(Class c,String ddmmyy,String time);
+  Future<void>addSchedule(Class c, String ddmmmyy,String from,String to);
+  Future<void>deleteSchedule(Class c,String ddmmyy,String from,String to);
   Future<List<Class>>getAllScheduledClasses(String ddmmyy);
 }

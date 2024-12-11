@@ -23,4 +23,5 @@ const classNameCol='class_name';
 const scheduleTable='scheduleTable';
 const scheduleIDcol='schedule_ID';
 const scheduledClassCol='scheduled_Class';
-const scheduledTimeCol='scheduled_Time';
+const scheduledFromTimeCol='scheduled_from_time';
+const scheduledToTimeCol='scheduled_to_time';

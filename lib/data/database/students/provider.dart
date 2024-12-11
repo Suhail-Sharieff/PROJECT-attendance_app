@@ -62,7 +62,8 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         $scheduleIDcol INTEGER PRIMARY KEY AUTOINCREMENT,
         $scheduledClassCol TEXT,
         $dateCol TEXT,
-        $scheduledTimeCol TEXT
+        $scheduledFromTimeCol TEXT,
+        $scheduledToTimeCol TEXT
         );
       '''
     );
@@ -345,15 +346,16 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
   @override
-  Future<void> addSchedule(Class c,String ddmmyy,String time) async{
+  Future<void> addSchedule(Class c,String ddmmyy,String from,String to) async{
       try{
         final db=await getDB();
-        log("TRYING TO ADD : $c AT $ddmmyy AT $time");
+        log("TRYING TO ADD : $c AT $ddmmyy FROM $from to $to");
         await db.insert(scheduleTable,
           {
             scheduledClassCol:c.class_name,
             dateCol:ddmmyy,
-            scheduledTimeCol:time,
+            scheduledFromTimeCol:from,
+            scheduledToTimeCol:to,
           }
         );
       }catch(e){
@@ -363,12 +365,12 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
   @override
-  Future<void> deleteSchedule(Class c,String ddmmyy,String time) async{
+  Future<void> deleteSchedule(Class c,String ddmmyy,String from,String to) async{
     try{
       final db=await getDB();
       await db.delete(scheduleTable,
-          where: '$classNameCol=? AND $dateCol=? AND $scheduledTimeCol=?',
-        whereArgs: [c.class_name,ddmmyy,time]
+          where: '$classNameCol=? AND $dateCol=? AND $scheduledFromTimeCol=? AND $scheduledToTimeCol=?',
+        whereArgs: [c.class_name,ddmmyy,from,to]
       );
     }catch(e){
       log(e.toString());
