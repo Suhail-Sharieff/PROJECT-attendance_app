@@ -7,7 +7,9 @@ import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/Widgets/appBar.dart';
 import 'package:attendance_app/data/database/students/service.dart';
 import 'package:attendance_app/data/models/classes_model/classes_model.dart';
+import 'package:attendance_app/data/models/schedule_model/schedule.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class ClassesCalendar extends StatefulWidget {
@@ -25,35 +27,37 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
   late final StudentDBService service;
   var firstDay = DateTime.now();
 
-  // mine:
-  Map<DateTime, List<Event>> events = {};
-  late final ValueNotifier<List<Event>> selEvents;
+
 
   @override
   void initState() {
     super.initState();
     service = widget.service;
     getAllClasses();
-    getAllScheduledClasses();
     _selectedDay = _focusedDay;
-    selEvents = ValueNotifier(getEventsOn(_selectedDay!));
   }
 
-  List<Event> getEventsOn(DateTime day) {
-    return events[day] ?? [];
-  }
 
   late List<Class> myClasses = [];
   Future<void> getAllClasses() async {
     myClasses = await service.getAllClasses();
   }
 
-  late List<Class>scheduledClasses=[];
-  Future<void>getAllScheduledClasses()async{
-    //selected dateTime as 2024-12-11 19:05:31.868454, so we need to parse it as ddmmyy
-    scheduledClasses=await service.getAllScheduledClasses(formatDate(_selectedDay??DateTime.now()));
+  bool isCurrentTimeGreaterThan(String timeStr) {
+    // Get current date and time
+    DateTime now = DateTime.now();
 
+    // Parse the given time string using DateFormat
+    DateFormat timeFormat = DateFormat('h:mm a');
+    DateTime parsedTime = timeFormat.parse(timeStr);
+
+    // Set the parsed time to the current date, so only the time part is considered
+    DateTime parsedTimeWithDate = DateTime(now.year, now.month, now.day, parsedTime.hour, parsedTime.minute);
+
+    // Compare the current time with the parsed time
+    return now.isAfter(parsedTimeWithDate);
   }
+
   String formatDate(DateTime dateTime) {
     // Extract day, month, and year
     String day = dateTime.day.toString().padLeft(2, '0'); // Ensure two digits for day
@@ -61,7 +65,7 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
     String year = dateTime.year.toString(); // Year is already 4 digits
 
     // Return formatted string in "ddMMyyyy" format
-    return '$day$month$year';
+    return '$day/$month/$year';
   }
 
   final fromDateContr=TextEditingController(text: 'Not Set');
@@ -87,7 +91,6 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
                 setState(() {
                   _selectedDay = selectedDay;
                   _focusedDay = focusedDay;
-                  selEvents.value = getEventsOn(_selectedDay!);
                 });
               }
             },
@@ -101,16 +104,25 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
             onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
-            eventLoader: getEventsOn,
           ),
           const Divider(),
-          Expanded(
-            child: ValueListenableBuilder<List<Event>>(
-              valueListenable: selEvents,
-              builder: (context, value, _) {
+          SizedBox(
+            height: 250,
+            child: FutureBuilder(
+              future: service.getAllSchedulesOn(formatDate(_focusedDay)),
+              builder: (_,s){
+                if(s.connectionState==ConnectionState.waiting){
+                  return const Center(child: CircularProgressIndicator(),);
+                }
+                final today=formatDate(_focusedDay);
+                log("DATA ON $today: ${s.data} ");
+                if(s.data!.isEmpty) return  Center(child: Text("No schedules added \non $today!"),);
+                List<Schedule>li=s.data!;
                 return ListView.builder(
-                  itemCount: value.length,
-                  itemBuilder: (c, idx) {
+                  itemCount: li.length,
+                  itemBuilder: (_, idx) {
+                    Schedule sh=li[idx];
+                    bool isTimeOver=isCurrentTimeGreaterThan(sh.scheduled_to);
                     return Container(
                       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
@@ -118,8 +130,15 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: ListTile(
-                        title: Text(value[idx].title),
-                        subtitle: Text("${value[idx].from} - ${value[idx].to}" ),
+                        title: Text(sh.scheduled_class_name),
+                        subtitle: Text("${sh.scheduled_from} - ${sh.scheduled_to}" ),
+                        trailing: IconButton(onPressed: ()async{
+                          await service.deleteSchedule(sh);
+                          setState(() {
+
+                          });
+                        }, icon: const Icon(Icons.delete_outline,color: Colors.red,)),
+                        tileColor: (isTimeOver)?(Colors.green.withOpacity(0.6)):(Colors.white),
                       ),
                     );
                   },
@@ -182,7 +201,7 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
               Text("From : ${fromDateContr.text}"),
               ElevatedButton(onPressed: ()async{
                 fromDateContr.text=await pickTime();
-              }, child: Icon(Icons.timer)),
+              }, child: const Icon(Icons.timer)),
             ],
           ),
           Row(
@@ -190,7 +209,7 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
               Text("To : ${toDateContr.text}"),
               ElevatedButton(onPressed: ()async{
                 toDateContr.text=await pickTime();
-              }, child: Icon(Icons.timer)),
+              }, child: const Icon(Icons.timer)),
             ],
           ),
         ],
@@ -198,18 +217,9 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
       actions: [
         ElevatedButton(
           onPressed: () async {
-            final eventName = classNameContr.text.trim();
             if (classNameContr.toString().isNotEmpty) {
-              setState(() {
-                // Add event to the selected day's list
-                if (events.containsKey(_selectedDay)) {
-                  events[_selectedDay]!.add(Event(eventName,fromDateContr.text,toDateContr.text));
-                } else {
-                  events[_selectedDay!] = [Event(eventName,fromDateContr.text,toDateContr.text)];
-                }
-              });
+              await service.addSchedule(Schedule(scheduled_class_name: classNameContr.text,scheduled_from: fromDateContr.text,scheduled_to: toDateContr.text,scheduled_date: formatDate(_focusedDay)));
               // Update the events list
-              selEvents.value = getEventsOn(_selectedDay!);
               classNameContr.clear();
               fromDateContr.clear();
               toDateContr.clear();
@@ -231,11 +241,3 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
 
 }
 
-class Event {
-  final String title;
-  final String from;
-  final String to;
-  const Event(
-    this.title, this.from, this.to,
-  );
-}

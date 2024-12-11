@@ -370,8 +370,8 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     try{
       final db=await getDB();
       await db.delete(scheduleTable,
-          where: '$classNameCol=? AND $dateCol=? AND $scheduledFromTimeCol=? AND $scheduledToTimeCol=?',
-        whereArgs: [sh.scheduled_class_name,sh.scheduled_date,sh.scheduled_from,sh.scheduled_to]
+          where: '$scheduleIDcol=?',
+        whereArgs: [sh.id]
       );
     }catch(e){
       log(e.toString());
