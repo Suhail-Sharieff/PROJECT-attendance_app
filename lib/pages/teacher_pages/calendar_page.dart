@@ -1,8 +1,12 @@
 // Copyright 2019 Aleksander Woźniak
 // SPDX-License-Identifier: Apache-2.0
 
+import 'dart:developer';
+
+import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/Widgets/appBar.dart';
 import 'package:attendance_app/data/database/students/service.dart';
+import 'package:attendance_app/data/models/classes_model/classes_model.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -19,17 +23,17 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   late final StudentDBService service;
-  var firstDay=DateTime.now();
+  var firstDay = DateTime.now();
 
   // mine:
   Map<DateTime, List<Event>> events = {};
-  TextEditingController eventNameController = TextEditingController();
   late final ValueNotifier<List<Event>> selEvents;
 
   @override
   void initState() {
     super.initState();
-    service=widget.service;
+    service = widget.service;
+    getAllClasses();
     _selectedDay = _focusedDay;
     selEvents = ValueNotifier(getEventsOn(_selectedDay!));
   }
@@ -38,6 +42,14 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
     return events[day] ?? [];
   }
 
+  late List<Class> myClasses = [];
+  Future<void> getAllClasses() async {
+    myClasses = await service.getAllClasses();
+  }
+
+  final fromDateContr=TextEditingController(text: 'Not Set');
+  final toDateContr=TextEditingController(text: 'Not Set');
+  TextEditingController classNameContr = TextEditingController(text: 'Select');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,13 +95,14 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
                   itemCount: value.length,
                   itemBuilder: (c, idx) {
                     return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
                         border: Border.all(),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: ListTile(
                         title: Text(value[idx].title),
+                        subtitle: Text("${value[idx].from} - ${value[idx].to}" ),
                       ),
                     );
                   },
@@ -105,35 +118,69 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
             context: context,
             builder: (_) {
               return AlertDialog(
-                title: Text("Schedule your time"),
+                title: const Text(
+                  "Schedule your time",
+                  style: TextStyle(fontSize: 18),
+                ),
                 scrollable: true,
                 content: Column(
                   children: [
-                    TextField(controller: eventNameController),
+                    DropdownMenu<Class>(
+                      inputDecorationTheme: const InputDecorationTheme(
+                          border: OutlineInputBorder()),
+                      label: const Text("Select class"),
+                      width: double.infinity,
+                      controller: classNameContr,
+                      dropdownMenuEntries: List.generate(myClasses.length, (i) {
+                        return DropdownMenuEntry(
+
+                            value: myClasses[i],
+                            label: myClasses[i].class_name);
+                      }),
+                    ),
+                    Row(
+                      children: [
+                        Text("From : ${fromDateContr.text}"),
+                        ElevatedButton(onPressed: ()async{
+                          fromDateContr.text=await pickTime();
+                        }, child: Icon(Icons.timer)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text("To : ${toDateContr.text}"),
+                        ElevatedButton(onPressed: ()async{
+                          toDateContr.text=await pickTime();
+                        }, child: Icon(Icons.timer)),
+                      ],
+                    ),
                   ],
                 ),
                 actions: [
                   ElevatedButton(
-                    onPressed: () {
-                      final eventName = eventNameController.text.trim();
-                      if (eventName.isNotEmpty) {
+                    onPressed: () async {
+                      final eventName = classNameContr.text.trim();
+                      if (classNameContr.toString().isNotEmpty) {
                         setState(() {
                           // Add event to the selected day's list
                           if (events.containsKey(_selectedDay)) {
-                            events[_selectedDay]!.add(Event(eventName));
+                            events[_selectedDay]!.add(Event(eventName,fromDateContr.text,toDateContr.text));
                           } else {
-                            events[_selectedDay!] = [Event(eventName)];
+                            events[_selectedDay!] = [Event(eventName,fromDateContr.text,toDateContr.text)];
                           }
                         });
                         // Update the events list
                         selEvents.value = getEventsOn(_selectedDay!);
-                        eventNameController.clear(); // Clear input
+                        classNameContr.clear();
+                        fromDateContr.clear();
+                        toDateContr.clear();
+                        setState(() {
+
+                        });
                         Navigator.of(context).pop();
                       } else {
-                        // Show an error message if the event name is empty
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Event name cannot be empty')),
-                        );
+                        await MyToast.showErrorMsg(
+                            "Class name cannot be empty", context);
                       }
                     },
                     child: Icon(Icons.add_box),
@@ -147,9 +194,25 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
       ),
     );
   }
+
+  Future<String> pickTime() async {
+    TimeOfDay? t =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    if (t == null) {
+      await MyToast.showErrorMsg("Pls Select time", context);
+    } else {
+      log("Chosen time: ${t.format(context)}");
+      return t.format(context).toString();
+    }
+    return TimeOfDay.now().format(context).toString();
+  }
 }
 
 class Event {
   final String title;
-  const Event(this.title);
+  final String from;
+  final String to;
+  const Event(
+    this.title, this.from, this.to,
+  );
 }
