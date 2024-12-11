@@ -21,7 +21,6 @@ class StudentDBProvider implements StudentDBAbstractProvider {
 
   Database? myDB;
 
-
   Future<Database> init_and_getDB() async {
     final storeDir = await getDatabasesPath();
     final dbPath = join(storeDir, dbName);
@@ -37,8 +36,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
           ''');
     });
 
-    await db.execute(
-      ''' 
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS $attendanceTable (
         $attendanceIDcol INTEGER PRIMARY KEY AUTOINCREMENT,
         $rollCol INTEGER,
@@ -47,18 +45,14 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         $classNameCol TEXT,
         FOREIGN KEY($rollCol) REFERENCES $studentsTable($rollCol)
         );
-      '''
-    );
-    await db.execute(
-      ''' 
+      ''');
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS $classesTable (
         $classIDcol INTEGER PRIMARY KEY AUTOINCREMENT,
         $classNameCol TEXT
         );
-      '''
-    );
-    await db.execute(
-      ''' 
+      ''');
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS $scheduleTable (
         $scheduleIDcol INTEGER PRIMARY KEY AUTOINCREMENT,
         $scheduledClassCol TEXT,
@@ -66,8 +60,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         $scheduledFromTimeCol TEXT,
         $scheduledToTimeCol TEXT
         );
-      '''
-    );
+      ''');
     return db;
   }
 
@@ -82,7 +75,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
       final db = await getDB();
       int id = await db.insert(studentsTable, {
         nameCol: newStudent.name,
-        classNameCol:newStudent.className,
+        classNameCol: newStudent.className,
       });
       log("INSERTED");
     } catch (e) {
@@ -108,7 +101,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
   @override
-  Future<List<Student>> getAllStudents(SortBy how,Class whichClass) async {
+  Future<List<Student>> getAllStudents(SortBy how, Class whichClass) async {
     try {
       final db = await getDB();
       log("sorting by : ${how.name}");
@@ -158,94 +151,75 @@ class StudentDBProvider implements StudentDBAbstractProvider {
     return formatter.format(now);
   }
 
-
-
-
-
   @override
-  Future<void>markStudent(Student student)async{
+  Future<void> markStudent(Student student) async {
     try {
-      final hasAttendanceAlready=await attendanceTableHasAttendanceForTodayOf(student);
-      final db=await getDB();
-      final date=getTodaysDate();
+      final hasAttendanceAlready =
+          await attendanceTableHasAttendanceForTodayOf(student);
+      final db = await getDB();
+      final date = getTodaysDate();
       //if he has attendance already and we r calling mark Student, means we need to delete that student from attendance table and decrease nOfAttended from students table
-      if(hasAttendanceAlready){
+      if (hasAttendanceAlready) {
         //lets delete first that student from attendace table
         await db.delete(attendanceTable,
-        where: '$rollCol=? AND $dateCol=?',
-          whereArgs: [student.roll,date]
-        );
+            where: '$rollCol=? AND $dateCol=?',
+            whereArgs: [student.roll, date]);
         //now lets decrement nOfAttended in students table fro that student
         await db.update(studentsTable,
-        {
-          nOfClassesAttendedCol:student.nOfClassesAttended-1
-        },
-        where: '$rollCol=?', whereArgs: [student.roll]
-        );
+            {nOfClassesAttendedCol: student.nOfClassesAttended - 1},
+            where: '$rollCol=?', whereArgs: [student.roll]);
         log("DELETED FROM ATTENDANCE TABLE AND UPDATED STUDENS TABLE");
-      }else{
+      } else {
         //if he doent have attendance already, we nned to insert into attendance table and also increase nof attendaed in student db
-        await db.insert(attendanceTable,
-        {
-          rollCol:student.roll,
-          isPresentCol:1,
-          dateCol:date,
-          classNameCol:student.className,
-        }
-        );
+        await db.insert(attendanceTable, {
+          rollCol: student.roll,
+          isPresentCol: 1,
+          dateCol: date,
+          classNameCol: student.className,
+        });
         //increase classes attended in students table
         await db.update(studentsTable,
-        {
-          nOfClassesAttendedCol:student.nOfClassesAttended+1
-        },
-          where: '$rollCol=?',
-          whereArgs: [student.roll]
-        );
+            {nOfClassesAttendedCol: student.nOfClassesAttended + 1},
+            where: '$rollCol=?', whereArgs: [student.roll]);
         log("INSERTED INTO ATTENDANCE TABLE AND UPDATED STUDENS TABLE");
       }
-    }  catch (e) {
+    } catch (e) {
       log(e.toString());
       throw CouldntMarkStudentException();
     }
-
   }
 
-
-
   @override
-  Future<List<Map<String, dynamic>>>getStudentAttendanceMapList(Student student) async{
-    try{
+  Future<List<Map<String, dynamic>>> getStudentAttendanceMapList(
+      Student student) async {
+    try {
       final db = await getDB();
-      final List<Map<String,dynamic>>li=await db.query(attendanceTable,
-      where: '$rollCol=?',
-        whereArgs: [student.roll]
-      );
+      final List<Map<String, dynamic>> li = await db.query(attendanceTable,
+          where: '$rollCol=?', whereArgs: [student.roll]);
       log(li.toString());
       return li;
-    }catch(e){
+    } catch (e) {
       log(e.toString());
       throw CouldntGetStudentAttendanceList();
     }
   }
 
   @override
-  Future<bool>isPresentToday(Student student)async{
-    try{
-      final li=await getStudentAttendanceMapList(student);
-      final map=li.where((each)=>each[isPresentCol]==1);
+  Future<bool> isPresentToday(Student student) async {
+    try {
+      final li = await getStudentAttendanceMapList(student);
+      final map = li.where((each) => each[isPresentCol] == 1);
       return map.isNotEmpty;
-    }catch(e){
+    } catch (e) {
       log(e.toString());
       throw Exception("COULD FETCH THAT STUDENT's DATA");
     }
   }
 
-
-
   //this will tell me if that student has attendance on curr day:
-  Future<bool>attendanceTableHasAttendanceForTodayOf(Student student)async{
-    final db=await getDB();
-    final String ddmmyyyy=getTodaysDate();
+  Future<bool> attendanceTableHasAttendanceForTodayOf(Student student) async {
+    final db = await getDB();
+    final String ddmmyyyy = getTodaysDate();
     //attendance col has attendanceID,isPresent,date,roll(as foreign key)
     final existingRecord = await db.query(
       attendanceTable,
@@ -258,28 +232,29 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
   @override
-  Future<void> refresh(Class forWhichClass) async{
+  Future<void> refresh(Class forWhichClass) async {
     try {
-      final db=await getDB();
-      final String ddmmyyyy=getTodaysDate();
+      final db = await getDB();
+      final String ddmmyyyy = getTodaysDate();
       //mark everyone not present only if none of student has attendance on today:
       final existingRecord = await db.query(
         attendanceTable,
         where: '$dateCol = ? AND $classNameCol=?',
-        whereArgs: [ddmmyyyy,forWhichClass.class_name],
+        whereArgs: [ddmmyyyy, forWhichClass.class_name],
       );
-     if(existingRecord.isEmpty){
-       await db.update(attendanceTable,
-           {
-             isPresentCol:0,
-           },
-         where: '$classNameCol=?',
-         whereArgs: [forWhichClass.class_name],
-       );
-       log("UPDATED ALL TO NOT ATTENDED FOR THE CLASS ${forWhichClass.class_name}");
-     }else{
-       log("ATTENDANCE TAKEN ALREADY ON THAT DATE FOR ${forWhichClass.class_name}");
-     }
+      if (existingRecord.isEmpty) {
+        await db.update(
+          attendanceTable,
+          {
+            isPresentCol: 0,
+          },
+          where: '$classNameCol=?',
+          whereArgs: [forWhichClass.class_name],
+        );
+        log("UPDATED ALL TO NOT ATTENDED FOR THE CLASS ${forWhichClass.class_name}");
+      } else {
+        log("ATTENDANCE TAKEN ALREADY ON THAT DATE FOR ${forWhichClass.class_name}");
+      }
     } catch (e) {
       log(e.toString());
       throw Exception("COULDNT MARK ALL ATTENDED COL AS 0");
@@ -287,118 +262,108 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   }
 
   @override
-  Future<List<Class>> getAllClasses() async{
-    try{
-      final db=await getDB();
-      List<Map<String,dynamic>>list;
-      list=await db.query(classesTable);
-      return List.generate(
-        list.length,
-          (idx){
-          return Class.fromJson(list[idx]);
-          }
-      );
-    }catch(e){
+  Future<List<Class>> getAllClasses() async {
+    try {
+      final db = await getDB();
+      List<Map<String, dynamic>> list;
+      list = await db.query(classesTable);
+      return List.generate(list.length, (idx) {
+        return Class.fromJson(list[idx]);
+      });
+    } catch (e) {
       log(e.toString());
       throw CouldntReadClassesException();
     }
   }
 
   @override
-  Future<void> addClass(Class newClass) async{
-   try{
-     final db=await getDB();
-     await db.insert(classesTable,
-     {
-       classNameCol:newClass.class_name,
-     }
-     );
-     log("CLASS CREATION SUCCESS");
-   }catch(e){
-     log(e.toString());
-     throw CouldntAddClassException();
-   }
+  Future<void> addClass(Class newClass) async {
+    try {
+      final db = await getDB();
+      await db.insert(classesTable, {
+        classNameCol: newClass.class_name,
+      });
+      log("CLASS CREATION SUCCESS");
+    } catch (e) {
+      log(e.toString());
+      throw CouldntAddClassException();
+    }
   }
 
   @override
-  Future<void> deleteClass(Class c) async{
-    try{
-      final db=await getDB();
-      await db.delete(classesTable,where: '$classIDcol=?',whereArgs: [c.class_id]);
+  Future<void> deleteClass(Class c) async {
+    try {
+      final db = await getDB();
+      await db.delete(classesTable,
+          where: '$classIDcol=?', whereArgs: [c.class_id]);
       log("CLASS DELETION SUCCESS");
-    }catch(e){
+    } catch (e) {
       log(e.toString());
       throw CouldntDeleteClassException();
     }
   }
 
   @override
-  Future<int> nOfClassesTakenFor(Class c) async{
-    try{
-      final db=await getDB();
-      final queries=await db.query(attendanceTable,
-      where: '$classNameCol=?',
-        whereArgs: [c.class_name],
+  Future<int> nOfClassesTakenFor(Class c) async {
+    try {
+      final db = await getDB();
+      final queries = await db.rawQuery(
+        '''
+      SELECT DISTINCT $dateCol
+      FROM $attendanceTable
+      WHERE $classNameCol = ?
+      ''',
+        [c.class_name],
       );
+      print("QUERIES ARE: $queries");
       return queries.length;
-    }catch(e){
+    } catch (e) {
       throw Exception("COULDN'T GET NUMBER OF CLASSES TAKEN FOR ${c.class_name}");
     }
   }
 
+
   @override
-  Future<void> addSchedule(Schedule sh) async{
-      try{
-        final db=await getDB();
-        log("TRYING TO ADD : $sh");
-        await db.insert(scheduleTable,
-          {
-            scheduledClassCol:sh.scheduled_class_name,
-            dateCol:sh.scheduled_date,
-            scheduledFromTimeCol:sh.scheduled_from,
-            scheduledToTimeCol:sh.scheduled_to,
-          }
-        );
-      }catch(e){
-        log(e.toString());
-        throw CouldntAddScheduleException();
-      }
+  Future<void> addSchedule(Schedule sh) async {
+    try {
+      final db = await getDB();
+      log("TRYING TO ADD : $sh");
+      await db.insert(scheduleTable, {
+        scheduledClassCol: sh.scheduled_class_name,
+        dateCol: sh.scheduled_date,
+        scheduledFromTimeCol: sh.scheduled_from,
+        scheduledToTimeCol: sh.scheduled_to,
+      });
+    } catch (e) {
+      log(e.toString());
+      throw CouldntAddScheduleException();
+    }
   }
 
   @override
-  Future<void> deleteSchedule(Schedule sh) async{
-    try{
-      final db=await getDB();
-      await db.delete(scheduleTable,
-          where: '$scheduleIDcol=?',
-        whereArgs: [sh.id]
-      );
-    }catch(e){
+  Future<void> deleteSchedule(Schedule sh) async {
+    try {
+      final db = await getDB();
+      await db
+          .delete(scheduleTable, where: '$scheduleIDcol=?', whereArgs: [sh.id]);
+    } catch (e) {
       log(e.toString());
       throw CouldntDeleteScheduleException();
     }
   }
 
   @override
-  Future<List<Schedule>> getAllSchedulesOn(String ddmmyy) async{
-    try{
-      final db=await getDB();
-      final List<Map<String,dynamic>>onThatDay=await db.query(scheduleTable,
-          where: '$dateCol=?',
-          whereArgs: [ddmmyy]
-      );
-      return List.generate(
-        onThatDay.length,
-          (i){
-            return Schedule.fromJson(onThatDay[i]);
-          }
-      );
-    }catch(e){
+  Future<List<Schedule>> getAllSchedulesOn(String ddmmyy) async {
+    try {
+      final db = await getDB();
+      final List<Map<String, dynamic>> onThatDay = await db
+          .query(scheduleTable, where: '$dateCol=?', whereArgs: [ddmmyy]);
+      return List.generate(onThatDay.length, (i) {
+        return Schedule.fromJson(onThatDay[i]);
+      });
+    } catch (e) {
       log(e.toString());
       throw CouldntReadSchedulesException();
     }
   }
-
-
-
 }

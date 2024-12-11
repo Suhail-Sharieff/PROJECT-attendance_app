@@ -19,7 +19,6 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       routes: {
         homeRoute:(context)=>const HomePage(),
-        analyticsRoute:(context)=>const AnalyticsPage(),
         moreRoute:(context)=>const MorePage(),
       },
       theme: ThemeData(

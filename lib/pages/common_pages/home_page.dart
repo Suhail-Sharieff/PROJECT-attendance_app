@@ -61,8 +61,7 @@ class _HomePageState extends State<HomePage> {
     service=StudentDBService();
     pages = [
       ClassesPage(service: service),
-      const AnalyticsPage(),
-       // ClassesCalendar(service: service,),
+      AnalyticsPage(service: service,),
       ClassesCalendar(service: service,)
 
     ];
