@@ -1,13 +1,20 @@
+import 'package:attendance_app/data/database/students/provider.dart';
 import 'package:attendance_app/pages/common_pages/calendar_page.dart';
-import 'package:attendance_app/pages/common_pages/analytics_page.dart';
 import 'package:attendance_app/pages/common_pages/home_page.dart';
 import 'package:attendance_app/splash_screen.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import 'constants/routes/routes_names.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_)=>StudentDBProvider())
+      ],
+      child: const MyApp(),
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {

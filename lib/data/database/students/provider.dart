@@ -6,13 +6,14 @@ import 'package:attendance_app/data/database/students/exceptions.dart';
 import 'package:attendance_app/data/models/classes_model/classes_model.dart';
 import 'package:attendance_app/data/models/schedule_model/schedule.dart';
 import 'package:attendance_app/data/models/student_model/student_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:intl/intl.dart';
 
 import 'constants.dart';
 
-class StudentDBProvider implements StudentDBAbstractProvider {
+class StudentDBProvider with ChangeNotifier implements StudentDBAbstractProvider {
   StudentDBProvider._constructor();
 
   static final StudentDBProvider instance = StudentDBProvider._constructor();
@@ -78,6 +79,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         classNameCol: newStudent.className,
       });
       log("INSERTED");
+      notifyListeners();
     } catch (e) {
       log("ERROR IN INSERTING");
       log(e.toString());
@@ -93,6 +95,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         student.roll,
       ]);
       log("DELETED");
+      notifyListeners();
     } catch (e) {
       log("ERROR IN INSERTING");
       log(e.toString());
@@ -136,6 +139,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
           where: '$rollCol=?',
           whereArgs: [student.roll]);
       log("UPDATED");
+      notifyListeners();
     } catch (e) {
       log("ERROR IN UPDATING");
       log(e.toString());
@@ -183,6 +187,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
             where: '$rollCol=?', whereArgs: [student.roll]);
         log("INSERTED INTO ATTENDANCE TABLE AND UPDATED STUDENS TABLE");
       }
+      notifyListeners();
     } catch (e) {
       log(e.toString());
       throw CouldntMarkStudentException();
@@ -284,6 +289,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         classNameCol: newClass.class_name,
       });
       log("CLASS CREATION SUCCESS");
+      notifyListeners();
     } catch (e) {
       log(e.toString());
       throw CouldntAddClassException();
@@ -311,6 +317,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
       await db.delete(scheduleTable,
       where: '$scheduledClassCol=?',whereArgs: [c.class_name]);
       log("CLASS DELETION SUCCESS");
+      notifyListeners();
     } catch (e) {
       log(e.toString());
       throw CouldntDeleteClassException();
@@ -348,6 +355,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
         scheduledFromTimeCol: sh.scheduled_from,
         scheduledToTimeCol: sh.scheduled_to,
       });
+      notifyListeners();
     } catch (e) {
       log(e.toString());
       throw CouldntAddScheduleException();
@@ -360,6 +368,7 @@ class StudentDBProvider implements StudentDBAbstractProvider {
       final db = await getDB();
       await db
           .delete(scheduleTable, where: '$scheduleIDcol=?', whereArgs: [sh.id]);
+      notifyListeners();
     } catch (e) {
       log(e.toString());
       throw CouldntDeleteScheduleException();
