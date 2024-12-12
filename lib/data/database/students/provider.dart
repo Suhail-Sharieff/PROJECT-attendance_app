@@ -294,8 +294,22 @@ class StudentDBProvider implements StudentDBAbstractProvider {
   Future<void> deleteClass(Class c) async {
     try {
       final db = await getDB();
+      //first delet from classes table
       await db.delete(classesTable,
           where: '$classIDcol=?', whereArgs: [c.class_id]);
+      //delete from students table--OR ELSE THOSE CLASS SUDENTS WILL STILL PERSIST
+      await db.delete(studentsTable,
+      where: '$classNameCol=?',
+        whereArgs: [c.class_name]
+      );
+      //delete from attendance table
+      await db.delete(attendanceTable,
+      where: '$classNameCol=?',
+        whereArgs: [c.class_name]
+      );
+      //delete from schedule table:
+      await db.delete(scheduleTable,
+      where: '$scheduledClassCol=?',whereArgs: [c.class_name]);
       log("CLASS DELETION SUCCESS");
     } catch (e) {
       log(e.toString());
