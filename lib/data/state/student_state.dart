@@ -12,7 +12,6 @@ class StudentState with ChangeNotifier {
   final StudentDBService service;
   StudentState({required this.service});
 
-  //------------STUDENT LIST STATES
 
   List<Student>studentsList=[];
   
@@ -31,8 +30,9 @@ class StudentState with ChangeNotifier {
     studentsList[studentsList.indexWhere((e)=>e.roll==student.roll)]=student;
     notifyListeners();
   }
-  Future<void>getAllStudents(SortBy how,Class whichClass)async{
+  Future<List<Student>>getAllStudents(SortBy how,Class whichClass)async{
     studentsList=await service.getAllStudents(how, whichClass);
+    return studentsList;
   }
 
 

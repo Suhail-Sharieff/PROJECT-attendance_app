@@ -6,4 +6,23 @@ import '../database/students/service.dart';
 class ScheduleState with ChangeNotifier{
   final StudentDBService service;
   ScheduleState({required this.service});
+
+  List<Schedule>scheduleList=[];
+
+  Future<void> addSchedule(Schedule sh) async {
+    await service.addSchedule(sh);
+    scheduleList.add(sh);
+    notifyListeners();
+  }
+
+  Future<void> deleteSchedule(Schedule sh) async {
+    await service.deleteSchedule(sh);
+    scheduleList.removeWhere((e)=>e.id==sh.id);
+    notifyListeners();
+  }
+  Future<List<Schedule>> getAllSchedulesOn(String ddmmyy) async {
+    scheduleList=await service.getAllSchedulesOn(ddmmyy);
+    return scheduleList;
+  }
+
 }
