@@ -1,7 +1,5 @@
 import 'package:attendance_app/data/database/students/service.dart';
-import 'package:attendance_app/pages/common_pages/calendar_page.dart';
 import 'package:attendance_app/pages/common_pages/analytics_page.dart';
-import 'package:attendance_app/pages/teacher_pages/attendance_page.dart';
 import 'package:attendance_app/pages/teacher_pages/calendar_page.dart';
 import 'package:attendance_app/pages/teacher_pages/classes_page.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +35,8 @@ NavigationBar nb(int currentPageIndex,Function(int) onChange) {
 
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.service});
+  final StudentDBService service;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -46,7 +45,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   int currPageIdx=0;
-  late final StudentDBService service;
+
 
   void onChange(int idx){
     setState(() {
@@ -58,11 +57,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    service=StudentDBService();
     pages = [
-      ClassesPage(service: service),
-      AnalyticsPage(service: service,),
-      ClassesCalendar(service: service,)
+      ClassesPage(service: widget.service),
+      AnalyticsPage(service: widget.service,),
+      ClassesCalendar(service: widget.service,)
 
     ];
   }
