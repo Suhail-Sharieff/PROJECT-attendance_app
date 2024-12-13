@@ -39,6 +39,11 @@ https://drive.google.com/file/d/1q5FtGHgt17RbxgM0T5OvdEptJxTtSpw1/view?usp=shari
 
 ---
 
+## Version 2.0.0
+
+This version of the Attendance App includes the core functionalities as that of v1.0.0. The key difference is that v2.0.0 is far optimized compared to v1.0.0, since the usage of setState(){} has been replaced with Providers and thier Consumer. The app no longer calls setState method while marking the attendance meanwhile handling all core functonalities efficiently. Some minor UI changes are also made to enchance speed. The next version release would focus on state management using more efficient BLoC.
+
+--- 
 Feel free to explore these pages, and stay tuned for more features in future releases!
 
 
