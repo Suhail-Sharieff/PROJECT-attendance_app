@@ -7,10 +7,10 @@ import '../models/classes_model/classes_model.dart';
 import '../models/details_model/details_model.dart';
 import '../models/student_model/student_model.dart';
 
-class MyAppState with ChangeNotifier {
+class AttendancePageState with ChangeNotifier {
   final StudentDBService service;
 
-  MyAppState({required this.service});
+  AttendancePageState({required this.service});
 
   Map<Student, Details> map = {};
 
@@ -27,6 +27,7 @@ class MyAppState with ChangeNotifier {
       final List<Map<String, dynamic>> attendanceHistory =
           await service.getStudentAttendanceMapList(student);
       List<String> dates = [];
+      bool isPresentToday = await service.isPresentToday(student);
       for (Map<String, dynamic> eachMap in attendanceHistory) {
         dates.add(eachMap[dateCol]);
       }
@@ -38,7 +39,9 @@ class MyAppState with ChangeNotifier {
         roll: student.roll,
         nOfClassesTakenForHisClass: nOFClassesTakenForHisClass,
         attendanceDatesList: dates,
+        isPresentToday: isPresentToday,
       );
+      notifyListeners();
     }
   }
 
@@ -51,5 +54,25 @@ class MyAppState with ChangeNotifier {
         name: student.name,
         className: student.className,
         nOfClassesTakenForHisClass: nOFClassesTakenForHisClass);
+    notifyListeners();
+  }
+
+  Future<void> markStudent(Student student) async {
+    Details currDetails = map[student]!;
+    if (currDetails.isPresentToday) {
+      //he is present today but we are calling mark, means mark absent and decrese nOfClassesAttened
+      map[student] = currDetails.copyWith(isPresentToday: false,nOfClassesAttended: student.nOfClassesAttended + 1);
+    } else {
+      map[student] = currDetails.copyWith(
+          isPresentToday: true,
+          nOfClassesAttended: student.nOfClassesAttended + 1);
+    }
+    await service.markStudent(student);
+    notifyListeners();
+  }
+
+
+  List<Student>getStudentList(){
+    return map.keys.toList();
   }
 }

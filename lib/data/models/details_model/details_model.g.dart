@@ -18,6 +18,7 @@ _$DetailsImpl _$$DetailsImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      isPresentToday: json['isPresentThatDay'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$DetailsImplToJson(_$DetailsImpl instance) =>
@@ -28,4 +29,5 @@ Map<String, dynamic> _$$DetailsImplToJson(_$DetailsImpl instance) =>
       'nOfClassesAttended': instance.nOfClassesAttended,
       'nOfClassesTakenForHisClass': instance.nOfClassesTakenForHisClass,
       'attendanceHistory': instance.attendanceDatesList,
+      'isPresentThatDay': instance.isPresentToday,
     };

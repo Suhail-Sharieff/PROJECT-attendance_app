@@ -1,3 +1,4 @@
+import 'package:attendance_app/data/state/attendance_page_state.dart';
 import 'package:attendance_app/data/state/attendance_state.dart';
 import 'package:attendance_app/data/state/class_state.dart';
 import 'package:attendance_app/data/state/schedule_state.dart';
@@ -17,6 +18,7 @@ void main() {
         ChangeNotifierProvider(create: (_)=>ScheduleState(service: service)),
         ChangeNotifierProvider(create: (_)=>AttendanceState(service: service)),
         ChangeNotifierProvider(create: (_)=>ClassState(service: service)),
+        ChangeNotifierProvider(create: (_)=>AttendancePageState(service: service))
       ],
       child:  const MyApp(),
     )

@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/enums/sort_by.dart';
+import 'package:attendance_app/data/models/details_model/details_model.dart';
 import 'package:attendance_app/data/models/student_model/student_model.dart';
+import 'package:attendance_app/data/state/attendance_page_state.dart';
 import 'package:attendance_app/data/state/attendance_state.dart';
 import 'package:attendance_app/data/state/class_state.dart';
 import 'package:attendance_app/data/state/student_state.dart';
@@ -71,17 +73,18 @@ class _AttendancePageState extends State<AttendancePage> {
           )
         ],
       ),
-      body: Consumer<StudentState>(builder: (_,studentService,__){
+      body: Consumer<AttendancePageState>(builder: (_,service,__){
 
-        final Map<Student,Map<String,int>>mp=studentService.student_date_isPresntMap;
+        // final Map<Student,Map<String,int>>mp=service.student_date_isPresntMap;
+        final Map<Student,Details>mp=service.map;
 
         return FutureBuilder(
-          future: studentService.loadAllStudents(sortBy, myClass), // Make sure this is triggering correctly
+          future: service.load(sortBy, myClass), // Make sure this is triggering correctly
           builder: (c, s) {
             if (s.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            List<Student>studentList=studentService.studentsList;
+            List<Student>studentList=service.getStudentList();
 
             if (studentList.isEmpty) {
               return Center(
@@ -96,7 +99,7 @@ class _AttendancePageState extends State<AttendancePage> {
                 String today=studentService.getTodaysDate();
                 bool isPresent=mp[st]![today]==1?true:false;
 
-                
+
               },
             );
           },

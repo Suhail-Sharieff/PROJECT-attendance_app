@@ -32,6 +32,8 @@ mixin _$Details {
   int get nOfClassesTakenForHisClass => throw _privateConstructorUsedError;
   @JsonKey(name: "attendanceHistory")
   List<String> get attendanceDatesList => throw _privateConstructorUsedError;
+  @JsonKey(name: isPresentCol)
+  bool get isPresentToday => throw _privateConstructorUsedError;
 
   /// Serializes this Details to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -54,7 +56,8 @@ abstract class $DetailsCopyWith<$Res> {
       @JsonKey(name: nOfClassesAttendedCol) int nOfClassesAttended,
       @JsonKey(name: "nOfClassesTakenForHisClass")
       int nOfClassesTakenForHisClass,
-      @JsonKey(name: "attendanceHistory") List<String> attendanceDatesList});
+      @JsonKey(name: "attendanceHistory") List<String> attendanceDatesList,
+      @JsonKey(name: isPresentCol) bool isPresentToday});
 }
 
 /// @nodoc
@@ -78,6 +81,7 @@ class _$DetailsCopyWithImpl<$Res, $Val extends Details>
     Object? nOfClassesAttended = null,
     Object? nOfClassesTakenForHisClass = null,
     Object? attendanceDatesList = null,
+    Object? isPresentToday = null,
   }) {
     return _then(_value.copyWith(
       roll: null == roll
@@ -104,6 +108,10 @@ class _$DetailsCopyWithImpl<$Res, $Val extends Details>
           ? _value.attendanceDatesList
           : attendanceDatesList // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      isPresentToday: null == isPresentToday
+          ? _value.isPresentToday
+          : isPresentToday // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -122,7 +130,8 @@ abstract class _$$DetailsImplCopyWith<$Res> implements $DetailsCopyWith<$Res> {
       @JsonKey(name: nOfClassesAttendedCol) int nOfClassesAttended,
       @JsonKey(name: "nOfClassesTakenForHisClass")
       int nOfClassesTakenForHisClass,
-      @JsonKey(name: "attendanceHistory") List<String> attendanceDatesList});
+      @JsonKey(name: "attendanceHistory") List<String> attendanceDatesList,
+      @JsonKey(name: isPresentCol) bool isPresentToday});
 }
 
 /// @nodoc
@@ -144,6 +153,7 @@ class __$$DetailsImplCopyWithImpl<$Res>
     Object? nOfClassesAttended = null,
     Object? nOfClassesTakenForHisClass = null,
     Object? attendanceDatesList = null,
+    Object? isPresentToday = null,
   }) {
     return _then(_$DetailsImpl(
       roll: null == roll
@@ -170,6 +180,10 @@ class __$$DetailsImplCopyWithImpl<$Res>
           ? _value._attendanceDatesList
           : attendanceDatesList // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      isPresentToday: null == isPresentToday
+          ? _value.isPresentToday
+          : isPresentToday // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -185,7 +199,8 @@ class _$DetailsImpl implements _Details {
       @JsonKey(name: "nOfClassesTakenForHisClass")
       this.nOfClassesTakenForHisClass = 0,
       @JsonKey(name: "attendanceHistory")
-      final List<String> attendanceDatesList = const []})
+      final List<String> attendanceDatesList = const [],
+      @JsonKey(name: isPresentCol) this.isPresentToday = false})
       : _attendanceDatesList = attendanceDatesList;
 
   factory _$DetailsImpl.fromJson(Map<String, dynamic> json) =>
@@ -217,8 +232,12 @@ class _$DetailsImpl implements _Details {
   }
 
   @override
+  @JsonKey(name: isPresentCol)
+  final bool isPresentToday;
+
+  @override
   String toString() {
-    return 'Details(roll: $roll, name: $name, className: $className, nOfClassesAttended: $nOfClassesAttended, nOfClassesTakenForHisClass: $nOfClassesTakenForHisClass, attendanceDatesList: $attendanceDatesList)';
+    return 'Details(roll: $roll, name: $name, className: $className, nOfClassesAttended: $nOfClassesAttended, nOfClassesTakenForHisClass: $nOfClassesTakenForHisClass, attendanceDatesList: $attendanceDatesList, isPresentToday: $isPresentToday)';
   }
 
   @override
@@ -237,7 +256,9 @@ class _$DetailsImpl implements _Details {
                 other.nOfClassesTakenForHisClass ==
                     nOfClassesTakenForHisClass) &&
             const DeepCollectionEquality()
-                .equals(other._attendanceDatesList, _attendanceDatesList));
+                .equals(other._attendanceDatesList, _attendanceDatesList) &&
+            (identical(other.isPresentToday, isPresentToday) ||
+                other.isPresentToday == isPresentToday));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -249,7 +270,8 @@ class _$DetailsImpl implements _Details {
       className,
       nOfClassesAttended,
       nOfClassesTakenForHisClass,
-      const DeepCollectionEquality().hash(_attendanceDatesList));
+      const DeepCollectionEquality().hash(_attendanceDatesList),
+      isPresentToday);
 
   /// Create a copy of Details
   /// with the given fields replaced by the non-null parameter values.
@@ -276,7 +298,8 @@ abstract class _Details implements Details {
       @JsonKey(name: "nOfClassesTakenForHisClass")
       final int nOfClassesTakenForHisClass,
       @JsonKey(name: "attendanceHistory")
-      final List<String> attendanceDatesList}) = _$DetailsImpl;
+      final List<String> attendanceDatesList,
+      @JsonKey(name: isPresentCol) final bool isPresentToday}) = _$DetailsImpl;
 
   factory _Details.fromJson(Map<String, dynamic> json) = _$DetailsImpl.fromJson;
 
@@ -298,6 +321,9 @@ abstract class _Details implements Details {
   @override
   @JsonKey(name: "attendanceHistory")
   List<String> get attendanceDatesList;
+  @override
+  @JsonKey(name: isPresentCol)
+  bool get isPresentToday;
 
   /// Create a copy of Details
   /// with the given fields replaced by the non-null parameter values.
