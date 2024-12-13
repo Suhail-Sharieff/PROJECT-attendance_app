@@ -22,7 +22,6 @@ class _ClassesPageState extends State<ClassesPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // fetchClasses();
   }
 
   // Future<void> fetchClasses() async {
@@ -31,64 +30,57 @@ class _ClassesPageState extends State<ClassesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ClassState>(
-      builder: (_,service,__){
+    return Consumer<ClassState>(builder: (_,classService,__){
+      //class service is base service for class page
+      return FutureBuilder(future: classService.loadAllClasses(), builder: (c,s){//first load and then return
+
+        List<Class>classList=classService.classList;
+
         return Scaffold(
           appBar: MyAppBar(title: "My Classes "),
-          body: FutureBuilder(
-              future: service.getAllClasses(),
-              builder: (c, s) {
-                if (s.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
+          body: GridView.builder(
+              itemCount: classList.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2),
+              itemBuilder: (_, idx) {
+                if(classList.isEmpty){
+                  return const Center(child: Text("No Classes added yet !"),);
                 }
-                List<Class> classes = s.data!;
-                if (classes.isEmpty) {
-                  return const Center(
-                    child: Text("No class added yet !"),
-                  );
-                }
-                return GridView.builder(
-                    itemCount: classes.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2),
-                    itemBuilder: (_, idx) {
-                      Class curr = classes[idx];
-                      return GestureDetector(
-                        child: Container(
-                          height: 23,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(23),
-                              color: Colors.blueAccent.withOpacity(0.3),
-                              border: Border.all(
-                                  width: 2,
-                                  color: Colors.blueGrey,
-                                  style: BorderStyle.solid)),
-                          padding: const EdgeInsets.all(10),
-                          margin: const EdgeInsets.all(10),
-                          child: Center(
-                              child: Text(
-                                curr.class_name,
-                                style: const TextStyle(
-                                    fontSize: 15,
-                                    wordSpacing: 2,
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                        ),
-                        onLongPress: () async {
-                          await service.deleteClass(curr);
-                          // setState(() {});
-                        },
-                        onTap: () async {
-                          await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => AttendancePage(
-                                    thisClass: curr,
-                                  )));
-                        },
-                      );
-                    });
+                Class curr = classList[idx];
+                return GestureDetector(
+                  child: Container(
+                    height: 23,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(23),
+                        color: Colors.blueAccent.withOpacity(0.3),
+                        border: Border.all(
+                            width: 2,
+                            color: Colors.blueGrey,
+                            style: BorderStyle.solid)),
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.all(10),
+                    child: Center(
+                        child: Text(
+                          curr.class_name,
+                          style: const TextStyle(
+                              fontSize: 15,
+                              wordSpacing: 2,
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold),
+                        )),
+                  ),
+                  onLongPress: () async {
+                    await classService.deleteClass(curr);
+                  },
+                  onTap: () async {
+                    await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => AttendancePage(
+                              thisClass: curr,
+                            )));
+                  },
+                );
               }),
           floatingActionButton: FloatingActionButton(
             tooltip: "Add a new class",
@@ -115,7 +107,7 @@ class _ClassesPageState extends State<ClassesPage> {
                             child: ElevatedButton(
                                 onPressed: () async {
                                   if (classNameController.text.isNotEmpty) {
-                                    await service.addClass(Class(
+                                    await classService.addClass(Class(
                                         class_name: classNameController.text
                                             .toUpperCase()));
                                     await MyToast.showToast(
@@ -126,7 +118,6 @@ class _ClassesPageState extends State<ClassesPage> {
                                     await MyToast.showErrorMsg(
                                         "Class name cannot be empty !", context);
                                   }
-                                  // setState(() {});
                                 },
                                 child: const Text("Add")),
                           )
@@ -138,7 +129,7 @@ class _ClassesPageState extends State<ClassesPage> {
             child: const Icon(Icons.add_box_outlined),
           ),
         );
-      },
-    );
+      });
+    });
   }
 }

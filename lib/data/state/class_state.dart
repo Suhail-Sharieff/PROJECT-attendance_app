@@ -11,9 +11,8 @@ class ClassState with ChangeNotifier{
 
   List<Class>classList=[];
 
-  Future<List<Class>> getAllClasses() async{
+  Future<void>loadAllClasses()async{
     classList=await service.getAllClasses();
-    return classList;
   }
 
   Future<void> addClass(Class newClass) async {

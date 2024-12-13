@@ -29,7 +29,6 @@ class _AttendancePageState extends State<AttendancePage> {
   void initState() {
     super.initState();
     myClass = widget.thisClass;
-    // fetchData();
     log("Class being viewed: $myClass");
   }
 

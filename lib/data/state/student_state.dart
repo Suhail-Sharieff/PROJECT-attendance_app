@@ -14,6 +14,10 @@ class StudentState with ChangeNotifier {
 
 
   List<Student>studentsList=[];
+
+  Future<void>loadAllStudents(SortBy how,Class whichClass)async{
+    studentsList=await service.getAllStudents(how, whichClass);
+  }
   
   Future<void>addStudent(Student newStudent)async{
     await service.addStudent(newStudent);
@@ -29,10 +33,6 @@ class StudentState with ChangeNotifier {
     await service.updateStudent(student);
     studentsList[studentsList.indexWhere((e)=>e.roll==student.roll)]=student;
     notifyListeners();
-  }
-  Future<List<Student>>getAllStudents(SortBy how,Class whichClass)async{
-    studentsList=await service.getAllStudents(how, whichClass);
-    return studentsList;
   }
 
   Future<bool> isStudentPresentToday(Student st) async {

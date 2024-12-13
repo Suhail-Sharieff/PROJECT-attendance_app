@@ -9,6 +9,10 @@ class ScheduleState with ChangeNotifier{
 
   List<Schedule>scheduleList=[];
 
+  Future<void>loadAllSchedules(String ddmmyy)async{
+    scheduleList=await service.getAllSchedulesOn(ddmmyy);
+  }
+
   Future<void> addSchedule(Schedule sh) async {
     await service.addSchedule(sh);
     scheduleList.add(sh);
@@ -19,10 +23,6 @@ class ScheduleState with ChangeNotifier{
     await service.deleteSchedule(sh);
     scheduleList.removeWhere((e)=>e.id==sh.id);
     notifyListeners();
-  }
-  Future<List<Schedule>> getAllSchedulesOn(String ddmmyy) async {
-    scheduleList=await service.getAllSchedulesOn(ddmmyy);
-    return scheduleList;
   }
 
 }
