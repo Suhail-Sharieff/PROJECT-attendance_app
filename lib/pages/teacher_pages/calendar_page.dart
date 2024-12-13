@@ -4,7 +4,6 @@ import 'dart:developer';
 
 import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/Widgets/appBar.dart';
-import 'package:attendance_app/data/database/students/service.dart';
 import 'package:attendance_app/data/models/classes_model/classes_model.dart';
 import 'package:attendance_app/data/models/schedule_model/schedule.dart';
 import 'package:attendance_app/data/state/class_state.dart';
@@ -65,12 +64,14 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
   final fromDateContr=TextEditingController(text: 'Not Set');
   final toDateContr=TextEditingController(text: 'Not Set');
   TextEditingController classNameContr = TextEditingController();
+
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<ClassState>(builder:(_,classService,__){
-      return Scaffold(
-        appBar: MyAppBar(title: "Schedule"),
-        body: Column(
+    return Scaffold(
+      appBar: MyAppBar(title: "Schedule"),
+      body: Consumer<ClassState>(builder: (_,classService,__){
+        return Column(
           children: [
             TableCalendar(
               daysOfWeekHeight: 33,
@@ -104,20 +105,20 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
             SizedBox(
               height: 250,
               child: Consumer<ScheduleState>(builder: (_,scheduleService,__){
+                final today=formatDate(_focusedDay);
                 return FutureBuilder(
-                  future: scheduleService.getAllSchedulesOn(formatDate(_focusedDay)),
-                  builder: (_,s){
+                  future: scheduleService.loadAllSchedules(formatDate(_focusedDay)),
+                  builder: (c,s){
                     if(s.connectionState==ConnectionState.waiting){
                       return const Center(child: CircularProgressIndicator(),);
                     }
-                    final today=formatDate(_focusedDay);
-                    log("DATA ON $today: ${s.data} ");
-                    if(s.data!.isEmpty) return  Center(child: Text("No schedules added \non $today!"),);
-                    List<Schedule>li=s.data!;
+                    List<Schedule>scheduleList=scheduleService.scheduleList;
+                    log("DATA ON $_focusedDay: $scheduleList ");
+                    if(scheduleList.isEmpty) return  Center(child: Text("No schedules added \non $today!"),);
                     return ListView.builder(
-                      itemCount: li.length,
+                      itemCount: scheduleList.length,
                       itemBuilder: (_, idx) {
-                        Schedule sh=li[idx];
+                        Schedule sh=scheduleList[idx];
                         bool isTimeOver=isCurrentTimeGreaterThan(sh.scheduled_to);
                         return Container(
                           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -130,9 +131,6 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
                             subtitle: Text("${sh.scheduled_from} - ${sh.scheduled_to}" ),
                             trailing: IconButton(onPressed: ()async{
                               await scheduleService.deleteSchedule(sh);
-                              // setState(() {
-                              //
-                              // });
                             }, icon: const Icon(Icons.delete_outline,color: Colors.red,)),
                             tileColor: (isTimeOver)?(Colors.green.withOpacity(0.6)):(Colors.white),
                           ),
@@ -144,20 +142,20 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
               }),
             )
           ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            await showDialog(
-              context: context,
-              builder: (_) {
-                return myAlertDialog();
-              },
-            );
-          },
-          child: Icon(Icons.add),
-        ),
-      );
-    });
+        );
+      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await showDialog(
+            context: context,
+            builder: (_) {
+              return myAlertDialog();
+            },
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+    );
   }
 
   Future<String> pickTime() async {
@@ -183,8 +181,8 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
       content: Column(
         children: [
           Consumer<ClassState>(builder: (_,classService,__){
-            return FutureBuilder(future: classService.getAllClasses(), builder: (c,s){
-              List<Class>myClasses=s.data!;
+            return FutureBuilder(future: classService.loadAllClasses(), builder: (c,s){
+              List<Class>myClasses=classService.classList;
               return DropdownMenu<Class>(
                 inputDecorationTheme: const InputDecorationTheme(
                     border: OutlineInputBorder()),
@@ -223,20 +221,16 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
             onPressed: () async {
               if (classNameContr.toString().isNotEmpty) {
                 await scheduleService.addSchedule(Schedule(scheduled_class_name: classNameContr.text,scheduled_from: fromDateContr.text,scheduled_to: toDateContr.text,scheduled_date: formatDate(_focusedDay)));
-                // Update the events list
                 classNameContr.clear();
                 fromDateContr.clear();
                 toDateContr.clear();
-                // setState(() {
-                //
-                // });
                 Navigator.of(context).pop();
               } else {
                 await MyToast.showErrorMsg(
                     "Class name cannot be empty", context);
               }
             },
-            child: Icon(Icons.add_box),
+            child: const Icon(Icons.add_box),
           );
         }),
       ],

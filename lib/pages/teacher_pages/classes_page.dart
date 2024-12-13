@@ -1,6 +1,5 @@
 import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/Widgets/appBar.dart';
-import 'package:attendance_app/data/database/students/service.dart';
 import 'package:attendance_app/data/state/class_state.dart';
 import 'package:attendance_app/pages/teacher_pages/attendance_page.dart';
 import 'package:flutter/material.dart';
@@ -24,28 +23,20 @@ class _ClassesPageState extends State<ClassesPage> {
     super.initState();
   }
 
-  // Future<void> fetchClasses() async {
-  //   classes = await service.getAllClasses();
-  // }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ClassState>(builder: (_,classService,__){
-      //class service is base service for class page
-      return FutureBuilder(future: classService.loadAllClasses(), builder: (c,s){//first load and then return
+    return Scaffold(
+      appBar: MyAppBar(title: "My Classes "),
 
-        List<Class>classList=classService.classList;
-
-        return Scaffold(
-          appBar: MyAppBar(title: "My Classes "),
-          body: GridView.builder(
+      body: Consumer<ClassState>(builder: (_,classService,__){
+        return FutureBuilder(future: classService.loadAllClasses(), builder: (c,s){
+          List<Class>classList=classService.classList;
+          return GridView.builder(
               itemCount: classList.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2),
               itemBuilder: (_, idx) {
-                if(classList.isEmpty){
-                  return const Center(child: Text("No Classes added yet !"),);
-                }
                 Class curr = classList[idx];
                 return GestureDetector(
                   child: Container(
@@ -81,55 +72,57 @@ class _ClassesPageState extends State<ClassesPage> {
                             )));
                   },
                 );
-              }),
-          floatingActionButton: FloatingActionButton(
-            tooltip: "Add a new class",
-            onPressed: () async {
-              await showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Center(
-                          child: Text(
-                            "Add a new Class !",
-                            style: TextStyle(fontSize: 15),
-                          )),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            controller: classNameController,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                label: Text("Enter Class Name ")),
-                          ),
-                          Center(
-                            child: ElevatedButton(
-                                onPressed: () async {
-                                  if (classNameController.text.isNotEmpty) {
-                                    await classService.addClass(Class(
-                                        class_name: classNameController.text
-                                            .toUpperCase()));
-                                    await MyToast.showToast(
-                                        "Created successfully", Colors.green);
-                                    classNameController.clear();
-                                    Navigator.of(context).pop();
-                                  } else {
-                                    await MyToast.showErrorMsg(
-                                        "Class name cannot be empty !", context);
-                                  }
-                                },
-                                child: const Text("Add")),
-                          )
-                        ],
-                      ),
-                    );
-                  });
-            },
-            child: const Icon(Icons.add_box_outlined),
-          ),
+              });
+        });
+      }),
+      floatingActionButton: Consumer<ClassState>(builder: (_,classService,__){
+        return FloatingActionButton(
+          tooltip: "Add a new class",
+          onPressed: () async {
+            await showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Center(
+                        child: Text(
+                          "Add a new Class !",
+                          style: TextStyle(fontSize: 15),
+                        )),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: classNameController,
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              label: Text("Enter Class Name ")),
+                        ),
+                        Center(
+                          child: ElevatedButton(
+                              onPressed: () async {
+                                if (classNameController.text.isNotEmpty) {
+                                  await classService.addClass(Class(
+                                      class_name: classNameController.text
+                                          .toUpperCase()));
+                                  await MyToast.showToast(
+                                      "Created successfully", Colors.green);
+                                  classNameController.clear();
+                                  Navigator.of(context).pop();
+                                } else {
+                                  await MyToast.showErrorMsg(
+                                      "Class name cannot be empty !", context);
+                                }
+                              },
+                              child: const Text("Add")),
+                        )
+                      ],
+                    ),
+                  );
+                });
+          },
+          child: const Icon(Icons.add_box_outlined),
         );
-      });
-    });
+      }),
+    );
   }
 }
