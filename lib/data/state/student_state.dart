@@ -35,6 +35,14 @@ class StudentState with ChangeNotifier {
     return studentsList;
   }
 
+  Future<bool> isStudentPresentToday(Student st) async {
+    bool k=await service.isPresentToday(st);
+    return k;
+  }
 
+  Future<List<Map<String,dynamic>>>fetchStudentAttendance(Student st)async{
+    final List<Map<String,dynamic>> data=await service.getStudentAttendanceMapList(st);//List<Map<String,dynamic>>
+    return data;
+  }
 
 }

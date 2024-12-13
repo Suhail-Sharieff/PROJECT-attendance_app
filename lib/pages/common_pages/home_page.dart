@@ -35,8 +35,7 @@ NavigationBar nb(int currentPageIndex,Function(int) onChange) {
 
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.service});
-  final StudentDBService service;
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -58,9 +57,9 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement initState
     super.initState();
     pages = [
-      ClassesPage(service: widget.service),
-      AnalyticsPage(service: widget.service,),
-      ClassesCalendar(service: widget.service,)
+      const ClassesPage(),
+      AnalyticsPage(),
+      ClassesCalendar()
 
     ];
   }
