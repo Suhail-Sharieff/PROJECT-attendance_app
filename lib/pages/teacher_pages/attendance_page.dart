@@ -34,14 +34,15 @@ class _AttendancePageState extends State<AttendancePage> {
     log("Class being viewed: $myClass");
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Consumer<AttendanceState>(builder: (_,attendanceService,__){return Text(attendanceService.getTodaysDate());},),
+        title: Consumer<AttendanceState>(
+          builder: (_, attendanceService, __) {
+            return Text(attendanceService.getTodaysDate());
+          },
+        ),
         centerTitle: true,
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
@@ -73,18 +74,18 @@ class _AttendancePageState extends State<AttendancePage> {
           )
         ],
       ),
-      body: Consumer<AttendancePageState>(builder: (_,service,__){
-
+      body: Consumer<AttendancePageState>(builder: (_, service, __) {
         // final Map<Student,Map<String,int>>mp=service.student_date_isPresntMap;
-        final Map<Student,Details>mp=service.map;
+        final Map<Student, Details> mp = service.map;
 
         return FutureBuilder(
-          future: service.load(sortBy, myClass), // Make sure this is triggering correctly
+          future: service.load(
+              sortBy, myClass), // Make sure this is triggering correctly
           builder: (c, s) {
             if (s.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            List<Student>studentList=service.getStudentList();
+            List<Student> studentList = service.getStudentList();
 
             if (studentList.isEmpty) {
               return Center(
@@ -94,18 +95,78 @@ class _AttendancePageState extends State<AttendancePage> {
             return ListView.builder(
               itemCount: studentList.length,
               itemBuilder: (_, idx) {
-
                 Student st = studentList[idx];
-                String today=studentService.getTodaysDate();
-                bool isPresent=mp[st]![today]==1?true:false;
+                Details details = mp[st]!;
+                String today = service.getTodaysDate();
+                bool isPresent = details.isPresentToday;
+                int nAttended = details.nOfClassesAttended;
+                int nTotal = details.nOfClassesTakenForHisClass;
 
+                return Column(
+                  children: [
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical:
+                              8), // Padding to make the list tile feel more spacious
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.yellow,
+                        child: Text('${idx + 1}'),
+                      ),
+                      trailing: IconButton(
+                          onPressed: () async {
+                            await service.markStudent(st);
+                          },
+                          icon: (isPresent)
+                              ? (const Icon(
+                                  Icons.back_hand,
+                                  color: Colors.green,
+                                  applyTextScaling: true,
+                                ))
+                              : const Icon(Icons
+                                  .remove)), // Leading icon to represent the student
+                      title: Text(
+                        'ID : ${idx + 1}: ${st.name}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Attended: $nAttended/$nTotal',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      onLongPress: () async {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => StudentProfilePage(
+                            student: st,
+                            hisClass: myClass,
+                          ),
+                        ));
+                      },
 
+                      tileColor:
+                          Colors.grey[50], // Add a background color to the tile
+                      shape: RoundedRectangleBorder(
+                        // Round the corners of the tile for a more modern look
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      // elevation: 2,  // Adding a subtle shadow to lift the tile visually
+                    ),
+                    const Divider(),
+                  ],
+                );
               },
             );
           },
         );
       }),
-      floatingActionButton: Consumer<StudentState>(builder: (_,studentService,__){
+      floatingActionButton:
+          Consumer<StudentState>(builder: (_, studentService, __) {
         return FloatingActionButton(
           onPressed: () async {
             await showDialog(
@@ -136,7 +197,8 @@ class _AttendancePageState extends State<AttendancePage> {
                                         name: nameContr.text,
                                         className: myClass.class_name));
                                     await MyToast.showToast(
-                                        "Added ${nameContr.text}", Colors.green);
+                                        "Added ${nameContr.text}",
+                                        Colors.green);
                                     Navigator.of(context).pop();
                                     nameContr.clear();
                                     // await fetchData(); // Refresh data after adding

@@ -1,6 +1,7 @@
 import 'package:attendance_app/data/database/students/constants.dart';
 import 'package:attendance_app/data/database/students/service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 import '../../constants/enums/sort_by.dart';
 import '../models/classes_model/classes_model.dart';
@@ -74,5 +75,10 @@ class AttendancePageState with ChangeNotifier {
 
   List<Student>getStudentList(){
     return map.keys.toList();
+  }
+  String getTodaysDate() {
+    DateTime now = DateTime.now();
+    DateFormat formatter = DateFormat('dd/MM/yyyy');
+    return formatter.format(now);
   }
 }
