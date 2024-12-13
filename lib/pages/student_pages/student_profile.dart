@@ -30,9 +30,7 @@ class StudentProfilePage extends StatefulWidget {
 
 class _StudentProfilePageState extends State<StudentProfilePage> {
   // Define headers for your columns
-  final List<String> headers = [
-    'Student Present Dates',
-  ];
+
 
   late final Student student;
   @override
@@ -274,98 +272,6 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                           SizedBox.fromSize(
                             size: const Size(30, 30),
                           ),
-                          Consumer<AttendancePageState>(
-                              builder: (_, aService, __) {
-                            return FutureBuilder(
-                                future: aService.load(SortBy.roll,
-                                    Class(class_name: student.className)),
-                                builder: (c, s) {
-
-                                  List<String>?dates=aService.map[student]?.attendanceDatesList;
-
-                                  if (s.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-                                  return SizedBox(
-                                    height: 200,
-                                    child: Expanded(
-                                      // padding: const EdgeInsets.only(top: 10,bottom: 10,left: 1,right: 1),
-                                      child: SingleChildScrollView(
-                                        scrollDirection: Axis
-                                            .vertical, // For horizontal scrolling if the table is wide
-                                        child: DataTable(
-                                          columns: headers
-                                              .map(
-                                                (header) => DataColumn(
-                                                  label: Text(
-                                                    header,
-                                                    style: const TextStyle(
-                                                      fontFamily: 'Inter',
-                                                      letterSpacing: 0.0,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                          rows: List<DataRow>.generate(
-                                            dates!.length,
-                                            (int index) {
-                                              // Get the key from the map
-                                              List<String> rowData =
-                                                  dates ; // Get the row data using the key
-                                              return DataRow(
-                                                color: WidgetStateProperty.all(
-                                                  index % 2 == 0
-                                                      ? Colors.grey[
-                                                          200] // Even rows in a different color
-                                                      : Colors.white,
-                                                ),
-                                                cells: rowData
-                                                    .map(
-                                                      (cellData) => DataCell(
-                                                        Center(
-                                                          child: Text(
-                                                            cellData,
-                                                            style:
-                                                                const TextStyle(
-                                                              fontFamily:
-                                                                  'Inter',
-                                                              letterSpacing:
-                                                                  0.0,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    )
-                                                    .toList(),
-                                              );
-                                            },
-                                          ),
-                                          headingRowHeight:
-                                              56.0, // Height of the header row
-                                          dataRowMinHeight:
-                                              48.0, // Height of each data row
-                                          columnSpacing:
-                                              20.0, // Space between columns
-                                          headingRowColor:
-                                              WidgetStateProperty.all(
-                                                  Colors.blue), // Header color
-                                          border: TableBorder.all(
-                                              color: Colors.grey,
-                                              width: 1), // Table border
-                                          dividerThickness:
-                                              1.0, // Divider thickness between rows
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                });
-                          }),
 
                           Column(
                             mainAxisSize: MainAxisSize.max,

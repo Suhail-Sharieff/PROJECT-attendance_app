@@ -32,7 +32,13 @@ class _AttendancePageState extends State<AttendancePage> {
     super.initState();
     myClass = widget.thisClass;
     log("Class being viewed: $myClass");
-    Provider.of<AttendancePageState>(context, listen: false).load(sortBy, myClass);
+    fetch();
+  }
+
+  Future<void>fetch()async{
+    await Provider.of<AttendancePageState>(context, listen: false).load(sortBy, myClass);
+    setState(() {
+    });
   }
 
   @override
@@ -75,94 +81,79 @@ class _AttendancePageState extends State<AttendancePage> {
             )
           ],
         ),
-        body: Consumer<AttendancePageState>(builder: (_, service, __) {
-          // final Map<Student,Map<String,int>>mp=service.student_date_isPresntMap;
-          return FutureBuilder(future: service.load(sortBy, myClass), builder: (c,s){
+        body: Consumer<AttendancePageState>(builder: (context, service, __) {
 
-            if(s.connectionState==ConnectionState.waiting){
-              return const Center(child: CircularProgressIndicator(),);
-            }
+          final Map<Student, Details> mp = service.map;
 
-            final Map<Student, Details> mp = service.map;
+          List<Student> studentList = service.getStudentList();
 
-            List<Student> studentList = service.getStudentList();
-
-            if (studentList.isEmpty) {
-              return Center(
-                child: Text("No students added yet in ${myClass.class_name} !"),
-              );
-            }
-            return ListView.builder(
-              itemCount: studentList.length,
-              itemBuilder: (_, idx) {
-                Student st = studentList[idx];
-                Details details = mp[st]!;
-                String today = service.getTodaysDate();
-                bool isPresent = details.isPresentToday;
-                int nAttended = details.nOfClassesAttended;
-                int nTotal = details.nOfClassesTakenForHisClass;
-
-                return Column(
-                  children: [
-                    ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical:
-                          8), // Padding to make the list tile feel more spacious
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.yellow,
-                        child: Text('${idx + 1}'),
-                      ),
-                      trailing: IconButton(
-                          onPressed: () async {
-                            await service.markStudent(st);
-                          },
-                          icon: (isPresent)
-                              ? (const Icon(
-                            Icons.back_hand,
-                            color: Colors.green,
-                            applyTextScaling: true,
-                          ))
-                              : const Icon(Icons
-                              .remove)), // Leading icon to represent the student
-                      title: Text(
-                        'ID : ${idx + 1}: ${st.name}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      // subtitle: Text(
-                      //   'Attended: $nAttended/$nTotal',
-                      //   style: TextStyle(
-                      //     fontSize: 14,
-                      //     color: Colors.grey[700],
-                      //   ),
-                      // ),
-                      onLongPress: () async {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => StudentProfilePage(
-                            student: st,
-                            hisClass: myClass,
-                          ),
-                        ));
-                      },
-
-                      tileColor:
-                      Colors.grey[50], // Add a background color to the tile
-                      shape: RoundedRectangleBorder(
-                        // Round the corners of the tile for a more modern look
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      // elevation: 2,  // Adding a subtle shadow to lift the tile visually
-                    ),
-                    const Divider(),
-                  ],
-                );
-              },
+          if (studentList.isEmpty) {
+            return Center(
+              child: Text("No students added yet in ${myClass.class_name} !"),
             );
-          });
+          }
+          return ListView.builder(
+            itemCount: studentList.length,
+            itemBuilder: (_, idx) {
+              Student st = studentList[idx];
+              Details details = mp[st]!;
+              String today = service.getTodaysDate();
+              bool isPresent = details.isPresentToday;
+              int nAttended = details.nOfClassesAttended;
+              int nTotal = details.nOfClassesTakenForHisClass;
+
+              return Column(
+                children: [
+                  ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical:
+                        8), // Padding to make the list tile feel more spacious
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.yellow,
+                      child: Text('${idx + 1}'),
+                    ),
+                    trailing: IconButton(
+                        onPressed: () async {
+                          await service.markStudent(st);
+                        },
+                        icon: (isPresent)
+                            ? (const Icon(
+                          Icons.back_hand,
+                          color: Colors.green,
+                          applyTextScaling: true,
+                        ))
+                            : const Icon(Icons
+                            .remove)), // Leading icon to represent the student
+                    title: Text(
+                      'ID : ${idx + 1}: ${st.name}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    onLongPress: () async {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => StudentProfilePage(
+                          student: st,
+                          hisClass: myClass,
+                        ),
+                      ));
+                    },
+                    tileColor:
+                    Colors.grey[50], // Add a background color to the tile
+                    shape: RoundedRectangleBorder(
+                      // Round the corners of the tile for a more modern look
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    // elevation: 2,  // Adding a subtle shadow to lift the tile visually
+                  ),
+                  const Divider(),
+                ],
+              );
+            },
+          );
         }),
         floatingActionButton:
             Consumer<AttendancePageState>(builder: (_, service, __) {
