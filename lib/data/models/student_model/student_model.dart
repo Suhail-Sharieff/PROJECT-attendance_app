@@ -6,7 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'student_model.freezed.dart';
 part 'student_model.g.dart';
 
-//flutter packages pub run build_runner build
+//`flutter packages pub run build_runner build`
 @freezed
 class Student with _$Student {
   factory Student({

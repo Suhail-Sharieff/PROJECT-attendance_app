@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../database/students/constants.dart';
 import '../database/students/service.dart';
+import '../models/classes_model/classes_model.dart';
 import '../models/student_model/student_model.dart';
 
 class AttendanceState with ChangeNotifier {
@@ -14,13 +15,9 @@ class AttendanceState with ChangeNotifier {
   Map<int,Map<String,int>>roll_date_isPresntMap={};//----we use
 
   Future<void> loadMapList(Student student) async {
+    classList=await service.getAllClasses();
     studentAttendanceMapList =
         await service.getStudentAttendanceMapList(student);
-  }
-
-
-
-  Future<void> loadMap()async{
     for(var e in studentAttendanceMapList){
       int roll=e[rollCol];
       String date=e[dateCol];
@@ -28,6 +25,14 @@ class AttendanceState with ChangeNotifier {
       roll_date_isPresntMap[roll]={date:isPresent};
     }
   }
+
+
+  List<Class>classList=[];
+
+  Future<void>loadAllClasses()async{
+    classList=await service.getAllClasses();
+  }
+
   String getTodaysDate() {
     //using intl package
     DateTime now = DateTime.now();
@@ -43,10 +48,18 @@ class AttendanceState with ChangeNotifier {
     if(p==0){
       roll_date_isPresntMap[student.roll]?[today]=1;
     }else{
-      roll_date_isPresntMap[student.roll]?[today]=10;
+      roll_date_isPresntMap[student.roll]?[today]=0;
     }
     notifyListeners();
   }
 
+  Future<List<String>>getDatesListFor(Student st) async {
+    final m=await service.getStudentAttendanceMapList(st);
+    List<String>li=[];
+    for(var e in m){
+      li.add(e[dateCol]);
+    }
+    return li;
+  }
 
 }

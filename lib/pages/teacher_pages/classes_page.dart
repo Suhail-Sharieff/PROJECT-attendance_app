@@ -32,6 +32,7 @@ class _ClassesPageState extends State<ClassesPage> {
       body: Consumer<ClassState>(builder: (_,classService,__){
         return FutureBuilder(future: classService.loadAllClasses(), builder: (c,s){
           List<Class>classList=classService.classList;
+          if(classList.isEmpty) return const Center(child: Text("No Classes added yet !"),);
           return GridView.builder(
               itemCount: classList.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

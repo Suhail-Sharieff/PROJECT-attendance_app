@@ -37,138 +37,73 @@ class _AttendancePageState extends State<AttendancePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StudentState>(builder: (_,service,__){
-      return Scaffold(
-        appBar: AppBar(
-          title: Consumer<AttendanceState>(builder: (_,attendanceService,__){return Text(attendanceService.getTodaysDate());},),
-          centerTitle: true,
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          actions: [
-            PopupMenuButton<SortBy>(
-              icon: const Icon(Icons.sort_sharp),
-              tooltip: "Sort By ",
-              itemBuilder: (context) {
-                return [
-                  const PopupMenuItem<SortBy>(
-                    value: SortBy.name,
-                    child: Text('Name'),
-                  ),
-                  const PopupMenuItem<SortBy>(
-                    value: SortBy.nOfClassesAttended,
-                    child: Text('Attendance'),
-                  ),
-                  const PopupMenuItem<SortBy>(
-                    value: SortBy.roll,
-                    child: Text('Date added'),
-                  ),
-                ];
-              },
-              onSelected: (val) async {
-                setState(() {
-                  sortBy = val;
-                });
-              },
-            )
-          ],
-        ),
-        body: FutureBuilder(
-          future: service.getAllStudents(sortBy, myClass), // Make sure this is triggering correctly
+    return Scaffold(
+      appBar: AppBar(
+        title: Consumer<AttendanceState>(builder: (_,attendanceService,__){return Text(attendanceService.getTodaysDate());},),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        actions: [
+          PopupMenuButton<SortBy>(
+            icon: const Icon(Icons.sort_sharp),
+            tooltip: "Sort By ",
+            itemBuilder: (context) {
+              return [
+                const PopupMenuItem<SortBy>(
+                  value: SortBy.name,
+                  child: Text('Name'),
+                ),
+                const PopupMenuItem<SortBy>(
+                  value: SortBy.nOfClassesAttended,
+                  child: Text('Attendance'),
+                ),
+                const PopupMenuItem<SortBy>(
+                  value: SortBy.roll,
+                  child: Text('Date added'),
+                ),
+              ];
+            },
+            onSelected: (val) async {
+              setState(() {
+                sortBy = val;
+              });
+            },
+          )
+        ],
+      ),
+      body: Consumer<StudentState>(builder: (_,studentService,__){
+
+        final Map<Student,Map<String,int>>mp=studentService.student_date_isPresntMap;
+
+        return FutureBuilder(
+          future: studentService.loadAllStudents(sortBy, myClass), // Make sure this is triggering correctly
           builder: (c, s) {
             if (s.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            List<Student>li=s.data!;
-            if (li.isEmpty) {
+            List<Student>studentList=studentService.studentsList;
+
+            if (studentList.isEmpty) {
               return Center(
                 child: Text("No students added yet in ${myClass.class_name} !"),
               );
             }
             return ListView.builder(
-              itemCount: li.length,
+              itemCount: studentList.length,
               itemBuilder: (_, idx) {
-                Student st = li[idx];
-                return FutureBuilder(
-                  future: service.isStudentPresentToday(st),
-                  builder: (_, snap) {
-                    if (snap.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    bool isPresent = snap.data!;
-                    return Consumer<AttendanceState>(builder: (_,attendanceService,__){
-                      return Column(
-                        children: [
-                          ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical:
-                                8), // Padding to make the list tile feel more spacious
-                            leading: CircleAvatar(
-                              backgroundColor: Colors.yellow,
-                              child: Text('${idx + 1}'),
-                            ),
-                            trailing: IconButton(
-                                onPressed: () async {
-                                  await attendanceService.markStudent(st);
-                                },
-                                icon: (isPresent)
-                                    ? (const Icon(
-                                  Icons.back_hand,
-                                  color: Colors.green,
-                                  applyTextScaling: true,
-                                ))
-                                    : const Icon(Icons
-                                    .remove)), // Leading icon to represent the student
-                            title: Text(
-                              'ID : ${idx + 1}: ${st.name}',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            subtitle: Consumer<ClassState>(builder: (_,classService,__){
-                              return FutureBuilder(future:classService.nOfClassesTakenFor(myClass) , builder: (c,s){
-                                if(s.connectionState==ConnectionState.waiting) return const Center(child: CircularProgressIndicator(),);
-                                return Text(
-                                  'Attended: ${st.nOfClassesAttended}/${s.data!}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[700],
-                                  ),
-                                );
-                              });
-                            }),
-                            onLongPress: () async {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) => StudentProfilePage(
-                                  student: st,
-                                  hisClass: myClass,
-                                ),
-                              ));
-                            },
 
-                            tileColor: Colors
-                                .grey[50], // Add a background color to the tile
-                            shape: RoundedRectangleBorder(
-                              // Round the corners of the tile for a more modern look
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            // elevation: 2,  // Adding a subtle shadow to lift the tile visually
-                          ),
-                          const Divider(),
-                        ],
-                      );
-                    });
-                  },
-                );
+                Student st = studentList[idx];
+                String today=studentService.getTodaysDate();
+                bool isPresent=mp[st]![today]==1?true:false;
+
+                
               },
             );
           },
-        ),
-        floatingActionButton: FloatingActionButton(
+        );
+      }),
+      floatingActionButton: Consumer<StudentState>(builder: (_,studentService,__){
+        return FloatingActionButton(
           onPressed: () async {
             await showDialog(
                 context: context,
@@ -194,7 +129,7 @@ class _AttendancePageState extends State<AttendancePage> {
                             ElevatedButton(
                                 onPressed: () async {
                                   if (nameContr.text.isNotEmpty) {
-                                    await service.addStudent(Student(
+                                    await studentService.addStudent(Student(
                                         name: nameContr.text,
                                         className: myClass.class_name));
                                     await MyToast.showToast(
@@ -226,8 +161,8 @@ class _AttendancePageState extends State<AttendancePage> {
             // setState(() {});
           },
           child: const Icon(Icons.add),
-        ),
-      );
-    });
+        );
+      }),
+    );
   }
 }
