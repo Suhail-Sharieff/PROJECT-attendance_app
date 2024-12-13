@@ -16,6 +16,7 @@ class AttendancePageState with ChangeNotifier {
   Map<Student, Details> map = {};
 
   Future<void> load(SortBy how, Class whichClass) async {
+    map.clear();
     final List<Student> students =
         await service.getAllStudents(how, whichClass);
 
@@ -42,7 +43,7 @@ class AttendancePageState with ChangeNotifier {
         attendanceDatesList: dates,
         isPresentToday: isPresentToday,
       );
-      notifyListeners();
+      // notifyListeners();
     }
   }
 
@@ -55,11 +56,13 @@ class AttendancePageState with ChangeNotifier {
         name: student.name,
         className: student.className,
         nOfClassesTakenForHisClass: nOFClassesTakenForHisClass);
+    print("ADDING");
     notifyListeners();
   }
 
   Future<void> markStudent(Student student) async {
     Details currDetails = map[student]!;
+    await service.markStudent(student);
     if (currDetails.isPresentToday) {
       //he is present today but we are calling mark, means mark absent and decrese nOfClassesAttened
       map[student] = currDetails.copyWith(isPresentToday: false,nOfClassesAttended: student.nOfClassesAttended + 1);
@@ -68,12 +71,12 @@ class AttendancePageState with ChangeNotifier {
           isPresentToday: true,
           nOfClassesAttended: student.nOfClassesAttended + 1);
     }
-    await service.markStudent(student);
     notifyListeners();
   }
 
 
   List<Student>getStudentList(){
+    // print("list---->${map.keys.toList()}");
     return map.keys.toList();
   }
   String getTodaysDate() {

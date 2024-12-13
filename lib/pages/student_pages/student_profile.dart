@@ -2,12 +2,16 @@ import 'dart:developer';
 
 import 'package:attendance_app/Utils/percent_indicator.dart';
 import 'package:attendance_app/Utils/toast.dart';
+import 'package:attendance_app/constants/enums/sort_by.dart';
 import 'package:attendance_app/data/database/students/constants.dart';
 import 'package:attendance_app/data/database/students/service.dart';
+import 'package:attendance_app/data/models/details_model/details_model.dart';
+import 'package:attendance_app/data/state/attendance_page_state.dart';
 import 'package:attendance_app/data/state/attendance_state.dart';
 import 'package:attendance_app/data/state/class_state.dart';
 import 'package:attendance_app/data/state/student_state.dart';
 import 'package:attendance_app/pages/common_pages/home_page.dart';
+import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,32 +19,20 @@ import '../../data/models/classes_model/classes_model.dart';
 import '../../data/models/student_model/student_model.dart';
 
 class StudentProfilePage extends StatefulWidget {
-
-
-
-
-
   final Student student;
   final Class hisClass;
-   const StudentProfilePage(
-      {super.key,
-      required this.student,
-      required this.hisClass});
+  const StudentProfilePage(
+      {super.key, required this.student, required this.hisClass});
 
   @override
   State<StudentProfilePage> createState() => _StudentProfilePageState();
 }
 
 class _StudentProfilePageState extends State<StudentProfilePage> {
-
-
   // Define headers for your columns
   final List<String> headers = [
     'Student Present Dates',
   ];
-
-
-
 
   late final Student student;
   @override
@@ -53,9 +45,9 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ClassState>(builder: (_,classService,__){
-      return Consumer<AttendanceState>(builder: (_,attendanceService,__){
-        return Consumer<StudentState>(builder: (_,studentService,__){
+    return Consumer<ClassState>(builder: (_, classService, __) {
+      return Consumer<AttendanceState>(builder: (_, attendanceService, __) {
+        return Consumer<StudentState>(builder: (_, studentService, __) {
           return Material(
             color: Colors.white,
             child: Scaffold(
@@ -75,10 +67,11 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                               context: context,
                               builder: (_) {
                                 TextEditingController nameContr =
-                                TextEditingController(text: student.name);
+                                    TextEditingController(text: student.name);
                                 TextEditingController attendContr =
-                                TextEditingController(
-                                    text: student.nOfClassesAttended.toString());
+                                    TextEditingController(
+                                        text: student.nOfClassesAttended
+                                            .toString());
                                 return AlertDialog(
                                   title: const Text(
                                     "Edit Student Data",
@@ -107,20 +100,22 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                       ),
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
+                                            MainAxisAlignment.spaceAround,
                                         children: [
                                           ElevatedButton(
                                               onPressed: () async {
                                                 if (nameContr.text.isNotEmpty) {
                                                   Student st = student;
-                                                  await studentService.updateStudent(
-                                                      st.copyWith(
-                                                          className: st.className,
+                                                  await studentService
+                                                      .updateStudent(st.copyWith(
+                                                          className:
+                                                              st.className,
                                                           roll: st.roll,
                                                           name: nameContr.text,
                                                           nOfClassesAttended:
-                                                          int.parse(
-                                                              attendContr.text)));
+                                                              int.parse(
+                                                                  attendContr
+                                                                      .text)));
                                                   await MyToast.showToast(
                                                       "Updated Successfully",
                                                       Colors.green);
@@ -130,9 +125,9 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                       .pushAndRemoveUntil(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                        const HomePage()),
-                                                        (Route<dynamic> route) =>
-                                                    false, // Remove all previous routes
+                                                            const HomePage()),
+                                                    (Route<dynamic> route) =>
+                                                        false, // Remove all previous routes
                                                   );
                                                 } else {
                                                   await MyToast.showErrorMsg(
@@ -231,21 +226,42 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                               ],
                             ),
                           ),
+                          Consumer<AttendancePageState>(builder: (_,ser,__){
+                            Details? d=ser.map[student];
+                            return Padding(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  0.0, 4.0, 0.0, 0.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Attended ${d!.nOfClassesAttended}/${d.nOfClassesTakenForHisClass} ',
+                                    style: const TextStyle(
+                                      fontFamily: 'Inter',
+                                      letterSpacing: 0.0,
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
                         ],
                       ),
                     ),
                     Padding(
-                      padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 16, horizontal: 32),
                       child: Column(
                         children: [
                           const SizedBox(height: 12),
                           //circular progress bar
-                          Consumer<ClassState>(builder: (_,classService,__){
+                          Consumer<ClassState>(builder: (_, classService, __) {
                             return FutureBuilder(
-                                future: classService.nOfClassesTakenFor(widget.hisClass),
+                                future: classService
+                                    .nOfClassesTakenFor(widget.hisClass),
                                 builder: (s, c) {
-                                  if (c.connectionState == ConnectionState.waiting) {
+                                  if (c.connectionState ==
+                                      ConnectionState.waiting) {
                                     return const Center(
                                       child: CircularProgressIndicator(),
                                     );
@@ -255,71 +271,100 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                 });
                           }),
 
-                          SizedBox.fromSize(size: const Size(30, 30),),
-                          FutureBuilder<List<String>>(future: attendanceService.getDatesListFor(student), builder: (c,s){
-                            
-                            if(s.connectionState==ConnectionState.waiting) return const Center(child: CircularProgressIndicator(),);
-                            return SizedBox(
-                              height: 200,
-                              child: Expanded(
-                                // padding: const EdgeInsets.only(top: 10,bottom: 10,left: 1,right: 1),
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.vertical, // For horizontal scrolling if the table is wide
-                                  child: DataTable(
-                                    columns: headers
-                                        .map(
-                                          (header) => DataColumn(
-                                        label: Text(
-                                          header,
-                                          style: const TextStyle(
-                                            fontFamily: 'Inter',
-                                            letterSpacing: 0.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                        .toList(),
-                                    rows: List<DataRow>.generate(
-                                      s.data!.length,
-                                          (int index) {
-                                        String key = index.toString(); // Get the key from the map
-                                        List<String> rowData = s.data![index] as List<String>; // Get the row data using the key
-                                        return DataRow(
-                                          color: WidgetStateProperty.all(
-                                            index % 2 == 0
-                                                ? Colors.grey[200] // Even rows in a different color
-                                                : Colors.white,
-                                          ),
-                                          cells: rowData
+                          SizedBox.fromSize(
+                            size: const Size(30, 30),
+                          ),
+                          Consumer<AttendancePageState>(
+                              builder: (_, aService, __) {
+                            return FutureBuilder(
+                                future: aService.load(SortBy.roll,
+                                    Class(class_name: student.className)),
+                                builder: (c, s) {
+
+                                  List<String>?dates=aService.map[student]?.attendanceDatesList;
+
+                                  if (s.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  return SizedBox(
+                                    height: 200,
+                                    child: Expanded(
+                                      // padding: const EdgeInsets.only(top: 10,bottom: 10,left: 1,right: 1),
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis
+                                            .vertical, // For horizontal scrolling if the table is wide
+                                        child: DataTable(
+                                          columns: headers
                                               .map(
-                                                (cellData) => DataCell(
-                                              Center(
-                                                child: Text(
-                                                  cellData,
-                                                  style: const TextStyle(
-                                                    fontFamily: 'Inter',
-                                                    letterSpacing: 0.0,
+                                                (header) => DataColumn(
+                                                  label: Text(
+                                                    header,
+                                                    style: const TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      letterSpacing: 0.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ),
-                                          )
+                                              )
                                               .toList(),
-                                        );
-                                      },
+                                          rows: List<DataRow>.generate(
+                                            dates!.length,
+                                            (int index) {
+                                              // Get the key from the map
+                                              List<String> rowData =
+                                                  dates ; // Get the row data using the key
+                                              return DataRow(
+                                                color: WidgetStateProperty.all(
+                                                  index % 2 == 0
+                                                      ? Colors.grey[
+                                                          200] // Even rows in a different color
+                                                      : Colors.white,
+                                                ),
+                                                cells: rowData
+                                                    .map(
+                                                      (cellData) => DataCell(
+                                                        Center(
+                                                          child: Text(
+                                                            cellData,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontFamily:
+                                                                  'Inter',
+                                                              letterSpacing:
+                                                                  0.0,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                              );
+                                            },
+                                          ),
+                                          headingRowHeight:
+                                              56.0, // Height of the header row
+                                          dataRowMinHeight:
+                                              48.0, // Height of each data row
+                                          columnSpacing:
+                                              20.0, // Space between columns
+                                          headingRowColor:
+                                              WidgetStateProperty.all(
+                                                  Colors.blue), // Header color
+                                          border: TableBorder.all(
+                                              color: Colors.grey,
+                                              width: 1), // Table border
+                                          dividerThickness:
+                                              1.0, // Divider thickness between rows
+                                        ),
+                                      ),
                                     ),
-                                    headingRowHeight: 56.0, // Height of the header row
-                                    dataRowMinHeight: 48.0, // Height of each data row
-                                    columnSpacing: 20.0, // Space between columns
-                                    headingRowColor:
-                                    WidgetStateProperty.all(Colors.blue), // Header color
-                                    border: TableBorder.all(color: Colors.grey, width: 1), // Table border
-                                    dividerThickness: 1.0, // Divider thickness between rows
-                                  ),
-                                ),
-                              ),
-                            );
+                                  );
+                                });
                           }),
 
                           Column(
@@ -336,7 +381,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                         return AlertDialog(
                                           title: Text(
                                             "Sure Delete ${student.name} ?",
-                                            style: const TextStyle(fontSize: 20),
+                                            style:
+                                                const TextStyle(fontSize: 20),
                                           ),
                                           content: Column(
                                             mainAxisSize: MainAxisSize.min,
@@ -346,7 +392,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                   ElevatedButton(
                                                       onPressed: () async {
                                                         await studentService
-                                                            .deleteStudent(student);
+                                                            .deleteStudent(
+                                                                student);
                                                         await MyToast.showToast(
                                                             "Delete Success",
                                                             Colors.green);
@@ -356,9 +403,10 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                             .pushAndRemoveUntil(
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                              const HomePage()),
-                                                              (Route<dynamic> route) =>
-                                                          false, // Remove all previous routes
+                                                                  const HomePage()),
+                                                          (Route<dynamic>
+                                                                  route) =>
+                                                              false, // Remove all previous routes
                                                         );
                                                       },
                                                       child: const Text("Yes")),
@@ -367,9 +415,11 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                   ),
                                                   ElevatedButton(
                                                       onPressed: () {
-                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context)
+                                                            .pop();
                                                       },
-                                                      child: const Text("Cancel")),
+                                                      child:
+                                                          const Text("Cancel")),
                                                 ],
                                               )
                                             ],
@@ -385,7 +435,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                   decoration: const BoxDecoration(
                                     color: Colors.red,
                                     borderRadius:
-                                    BorderRadius.all(Radius.circular(23)),
+                                        BorderRadius.all(Radius.circular(23)),
                                   ),
                                   child: const Text(
                                     'Delete',
