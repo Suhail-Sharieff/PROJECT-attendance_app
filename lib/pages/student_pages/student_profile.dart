@@ -128,6 +128,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                                                     (Route<dynamic> route) =>
                                                         false, // Remove all previous routes
                                                   );
+
                                                 } else {
                                                   await MyToast.showErrorMsg(
                                                       "Name cannot be empty !",

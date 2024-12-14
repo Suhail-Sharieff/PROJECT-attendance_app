@@ -7,7 +7,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 class MyPercentIndicator{
   static  Center circular(double value) {
     value=max(value, 0);
-    String st = "${double.tryParse((value*100).toString())} %";
+    String st = (value.isNaN)?"0.0 %":("${double.tryParse((value*100).toString())} %");
     return Center(
       child: CircularPercentIndicator(
         radius: 80.0,

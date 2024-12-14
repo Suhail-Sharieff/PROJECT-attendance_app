@@ -42,8 +42,6 @@ class StudentState with ChangeNotifier {
   }
   Future<void>updateStudent(Student student)async{
     await service.updateStudent(student);
-    studentsList[studentsList.indexWhere((e)=>e.roll==student.roll)]=student;
-    final k=student_date_isPresntMap.keys.where((e)=>e.roll==student.roll).first;
     notifyListeners();
   }
 
