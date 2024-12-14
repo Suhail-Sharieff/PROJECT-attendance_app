@@ -13,6 +13,7 @@ This version of the Attendance App includes the core functionalities as describe
 https://drive.google.com/file/d/1q5FtGHgt17RbxgM0T5OvdEptJxTtSpw1/view?usp=sharing
 
 ## How to Use?
+git push --set-upstream origin main
 
 ### 1. Attendance Page
 - **Create Classes:** On the first page, you can create new classes by providing a name for each class. You can add as many classes as you need.

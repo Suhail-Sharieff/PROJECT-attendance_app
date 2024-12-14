@@ -4,17 +4,18 @@ import 'dart:developer';
 
 import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/Widgets/appBar.dart';
-import 'package:attendance_app/data/database/students/service.dart';
 import 'package:attendance_app/data/models/classes_model/classes_model.dart';
 import 'package:attendance_app/data/models/schedule_model/schedule.dart';
+import 'package:attendance_app/data/state/class_state.dart';
+import 'package:attendance_app/data/state/schedule_state.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class ClassesCalendar extends StatefulWidget {
-  final StudentDBService service;
 
-  const ClassesCalendar({super.key, required this.service});
+  const ClassesCalendar({super.key});
   @override
   _ClassesCalendarState createState() => _ClassesCalendarState();
 }
@@ -23,7 +24,6 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  late final StudentDBService service;
   var firstDay = DateTime.now();
 
 
@@ -31,16 +31,10 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
   @override
   void initState() {
     super.initState();
-    service = widget.service;
-    getAllClasses();
     _selectedDay = _focusedDay;
   }
 
 
-  late List<Class> myClasses = [];
-  Future<void> getAllClasses() async {
-    myClasses = await service.getAllClasses();
-  }
 
   bool isCurrentTimeGreaterThan(String timeStr) {
     // Get current date and time
@@ -70,83 +64,86 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
   final fromDateContr=TextEditingController(text: 'Not Set');
   final toDateContr=TextEditingController(text: 'Not Set');
   TextEditingController classNameContr = TextEditingController();
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(title: "Schedule"),
-      body: Column(
-        children: [
-          TableCalendar(
-            daysOfWeekHeight: 33,
-            firstDay: firstDay,
-            lastDay: firstDay.add(const Duration(days: 365)),
-            focusedDay: _focusedDay,
-            calendarFormat: _calendarFormat,
-            selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day);
-            },
-            onDaySelected: (selectedDay, focusedDay) {
-              if (!isSameDay(_selectedDay, selectedDay)) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-              }
-            },
-            onFormatChanged: (format) {
-              if (_calendarFormat != format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
-              }
-            },
-            onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
-            },
-          ),
-          const Divider(),
-          SizedBox(
-            height: 250,
-            child: FutureBuilder(
-              future: service.getAllSchedulesOn(formatDate(_focusedDay)),
-              builder: (_,s){
-                if(s.connectionState==ConnectionState.waiting){
-                  return const Center(child: CircularProgressIndicator(),);
+      body: Consumer<ClassState>(builder: (_,classService,__){
+        return Column(
+          children: [
+            TableCalendar(
+              daysOfWeekHeight: 33,
+              firstDay: firstDay,
+              lastDay: firstDay.add(const Duration(days: 365)),
+              focusedDay: _focusedDay,
+              calendarFormat: _calendarFormat,
+              selectedDayPredicate: (day) {
+                return isSameDay(_selectedDay, day);
+              },
+              onDaySelected: (selectedDay, focusedDay) {
+                if (!isSameDay(_selectedDay, selectedDay)) {
+                  setState(() {
+                    _selectedDay = selectedDay;
+                    _focusedDay = focusedDay;
+                  });
                 }
+              },
+              onFormatChanged: (format) {
+                if (_calendarFormat != format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
+                }
+              },
+              onPageChanged: (focusedDay) {
+                _focusedDay = focusedDay;
+              },
+            ),
+            const Divider(),
+            SizedBox(
+              height: 250,
+              child: Consumer<ScheduleState>(builder: (_,scheduleService,__){
                 final today=formatDate(_focusedDay);
-                log("DATA ON $today: ${s.data} ");
-                if(s.data!.isEmpty) return  Center(child: Text("No schedules added \non $today!"),);
-                List<Schedule>li=s.data!;
-                return ListView.builder(
-                  itemCount: li.length,
-                  itemBuilder: (_, idx) {
-                    Schedule sh=li[idx];
-                    bool isTimeOver=isCurrentTimeGreaterThan(sh.scheduled_to);
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        title: Text(sh.scheduled_class_name),
-                        subtitle: Text("${sh.scheduled_from} - ${sh.scheduled_to}" ),
-                        trailing: IconButton(onPressed: ()async{
-                          await service.deleteSchedule(sh);
-                          setState(() {
-
-                          });
-                        }, icon: const Icon(Icons.delete_outline,color: Colors.red,)),
-                        tileColor: (isTimeOver)?(Colors.green.withOpacity(0.6)):(Colors.white),
-                      ),
+                return FutureBuilder(
+                  future: scheduleService.loadAllSchedules(formatDate(_focusedDay)),
+                  builder: (c,s){
+                    if(s.connectionState==ConnectionState.waiting){
+                      return const Center(child: CircularProgressIndicator(),);
+                    }
+                    List<Schedule>scheduleList=scheduleService.scheduleList;
+                    log("DATA ON $_focusedDay: $scheduleList ");
+                    if(scheduleList.isEmpty) return  Center(child: Text("No schedules added \non $today!"),);
+                    return ListView.builder(
+                      itemCount: scheduleList.length,
+                      itemBuilder: (_, idx) {
+                        Schedule sh=scheduleList[idx];
+                        bool isTimeOver=isCurrentTimeGreaterThan(sh.scheduled_to);
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: ListTile(
+                            title: Text(sh.scheduled_class_name),
+                            subtitle: Text("${sh.scheduled_from} - ${sh.scheduled_to}" ),
+                            trailing: IconButton(onPressed: ()async{
+                              await scheduleService.deleteSchedule(sh);
+                            }, icon: const Icon(Icons.delete_outline,color: Colors.red,)),
+                            tileColor: (isTimeOver)?(Colors.green.withOpacity(0.6)):(Colors.white),
+                          ),
+                        );
+                      },
                     );
                   },
                 );
-              },
-            ),
-          )
-        ],
-      ),
+              }),
+            )
+          ],
+        );
+      }),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await showDialog(
@@ -183,18 +180,23 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
       scrollable: true,
       content: Column(
         children: [
-          DropdownMenu<Class>(
-            inputDecorationTheme: const InputDecorationTheme(
-                border: OutlineInputBorder()),
-            label: const Text("Select class"),
-            width: double.infinity,
-            controller: classNameContr,
-            dropdownMenuEntries: List.generate(myClasses.length, (i) {
-              return DropdownMenuEntry(
-                  value: myClasses[i],
-                  label: myClasses[i].class_name);
-            }),
-          ),
+          Consumer<ClassState>(builder: (_,classService,__){
+            return FutureBuilder(future: classService.loadAllClasses(), builder: (c,s){
+              List<Class>myClasses=classService.classList;
+              return DropdownMenu<Class>(
+                inputDecorationTheme: const InputDecorationTheme(
+                    border: OutlineInputBorder()),
+                label: const Text("Select class"),
+                width: double.infinity,
+                controller: classNameContr,
+                dropdownMenuEntries: List.generate(myClasses.length, (i) {
+                  return DropdownMenuEntry(
+                      value: myClasses[i],
+                      label: myClasses[i].class_name);
+                }),
+              );
+            });
+          }),
           Row(
             children: [
               Text("From : ${fromDateContr.text}"),
@@ -214,25 +216,23 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
         ],
       ),
       actions: [
-        ElevatedButton(
-          onPressed: () async {
-            if (classNameContr.toString().isNotEmpty) {
-              await service.addSchedule(Schedule(scheduled_class_name: classNameContr.text,scheduled_from: fromDateContr.text,scheduled_to: toDateContr.text,scheduled_date: formatDate(_focusedDay)));
-              // Update the events list
-              classNameContr.clear();
-              fromDateContr.clear();
-              toDateContr.clear();
-              setState(() {
-
-              });
-              Navigator.of(context).pop();
-            } else {
-              await MyToast.showErrorMsg(
-                  "Class name cannot be empty", context);
-            }
-          },
-          child: Icon(Icons.add_box),
-        ),
+        Consumer<ScheduleState>(builder: (_,scheduleService,__){
+          return ElevatedButton(
+            onPressed: () async {
+              if (classNameContr.toString().isNotEmpty) {
+                await scheduleService.addSchedule(Schedule(scheduled_class_name: classNameContr.text,scheduled_from: fromDateContr.text,scheduled_to: toDateContr.text,scheduled_date: formatDate(_focusedDay)));
+                classNameContr.clear();
+                fromDateContr.clear();
+                toDateContr.clear();
+                Navigator.of(context).pop();
+              } else {
+                await MyToast.showErrorMsg(
+                    "Class name cannot be empty", context);
+              }
+            },
+            child: const Icon(Icons.add_box),
+          );
+        }),
       ],
     );
   }
