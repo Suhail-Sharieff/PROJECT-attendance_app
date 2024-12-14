@@ -16,7 +16,7 @@ https://drive.google.com/file/d/1q5FtGHgt17RbxgM0T5OvdEptJxTtSpw1/view?usp=shari
 git push --set-upstream origin main
 
 ### 1. Attendance Page
-- **Create Classes:** On the first page, you can create new classes by providing a name for each class. You can add as many classes as you need.
+- **Create Classes:** On the first page, you can create new classes by providing a name for each class. You can add as many classes as you need. To delete a class, just long press on that class.
 - **View and Mark Attendance:** Upon clicking a class in the grid (each grid element represents a class), you will be navigated to the attendance page for that class. On this page, you can:
   - **Mark Attendance**: Record student attendance for that class.
   - **Manage Students**: Add, delete, and edit student details.

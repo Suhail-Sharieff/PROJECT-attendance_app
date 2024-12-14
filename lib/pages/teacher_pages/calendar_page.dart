@@ -48,7 +48,7 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
     DateTime parsedTimeWithDate = DateTime(now.year, now.month, now.day, parsedTime.hour, parsedTime.minute);
 
     // Compare the current time with the parsed time
-    return now.isAfter(parsedTimeWithDate);
+    return now.isAfter(parsedTime) && now.isAfter(_focusedDay) ;
   }
 
   String formatDate(DateTime dateTime) {
@@ -61,8 +61,8 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
     return '$day/$month/$year';
   }
 
-  final fromDateContr=TextEditingController(text: 'Not Set');
-  final toDateContr=TextEditingController(text: 'Not Set');
+  final fromDateContr=TextEditingController(text: '');
+  final toDateContr=TextEditingController(text: '');
   TextEditingController classNameContr = TextEditingController();
 
 
@@ -153,7 +153,7 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
             },
           );
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
