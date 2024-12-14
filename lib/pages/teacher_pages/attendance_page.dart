@@ -130,7 +130,7 @@ class _AttendancePageState extends State<AttendancePage> {
                             : const Icon(Icons
                             .remove)), // Leading icon to represent the student
                     title: Text(
-                      'ID : ${idx + 1}: ${st.name}',
+                      st.name,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
