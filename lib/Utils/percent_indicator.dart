@@ -13,7 +13,7 @@ class MyPercentIndicator{
         radius: 80.0,
         lineWidth: 13.0,
         animation: true,
-        percent: value,
+        percent: min(value, 1),
         center: Text(
           st,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),

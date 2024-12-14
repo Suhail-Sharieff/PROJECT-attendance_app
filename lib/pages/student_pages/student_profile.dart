@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math';
 
 import 'package:attendance_app/Utils/percent_indicator.dart';
 import 'package:attendance_app/Utils/toast.dart';
@@ -38,7 +39,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     // TODO: implement initState
     super.initState();
     student = widget.student;
-    log("Student being viewed: $student");
+    // log("Student being viewed: $student");
   }
 
   @override
@@ -232,7 +233,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                               child: Column(
                                 children: [
                                   Text(
-                                    'Attended ${d!.nOfClassesAttended}/${d.nOfClassesTakenForHisClass} ',
+                                    'Attended ${min(d!.nOfClassesAttended,d.nOfClassesTakenForHisClass)}/${d.nOfClassesTakenForHisClass} ',
                                     style: const TextStyle(
                                       fontFamily: 'Inter',
                                       letterSpacing: 0.0,
@@ -278,6 +279,31 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
+                              TextButton.icon(
+                                onPressed: () async {
+                                  setState(() {
+
+                                  });
+                                },
+                                icon: const Icon(Icons.refresh),
+                                label: Container(
+                                  alignment: Alignment.center,
+                                  width: 150,
+                                  height: 45,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.lightBlue,
+                                    borderRadius:
+                                    BorderRadius.all(Radius.circular(23)),
+                                  ),
+                                  child: const Text(
+                                    'Refresh',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
                               //delete
                               TextButton.icon(
                                 onPressed: () async {
