@@ -77,6 +77,10 @@ class _AttendancePageState extends State<AttendancePage> {
                 setState(() {
                   sortBy = val;
                 });
+                await Provider.of<AttendancePageState>(context, listen: false).load(sortBy, myClass);
+                setState(() {
+
+                });
               },
             )
           ],

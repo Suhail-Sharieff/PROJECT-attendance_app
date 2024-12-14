@@ -6,6 +6,7 @@ import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/Widgets/appBar.dart';
 import 'package:attendance_app/data/models/classes_model/classes_model.dart';
 import 'package:attendance_app/data/models/schedule_model/schedule.dart';
+import 'package:attendance_app/data/state/attendance_state.dart';
 import 'package:attendance_app/data/state/class_state.dart';
 import 'package:attendance_app/data/state/schedule_state.dart';
 import 'package:flutter/material.dart';
@@ -61,8 +62,8 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
     return '$day/$month/$year';
   }
 
-  final fromDateContr=TextEditingController(text: '');
-  final toDateContr=TextEditingController(text: '');
+  final fromDateContr=TextEditingController();
+  final toDateContr=TextEditingController();
   TextEditingController classNameContr = TextEditingController();
 
 
@@ -159,15 +160,20 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
   }
 
   Future<String> pickTime() async {
-    TimeOfDay? t =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
-    if (t == null) {
-      await MyToast.showErrorMsg("Pls Select time", context);
-    } else {
-      log("Chosen time: ${t.format(context)}");
-      return t.format(context).toString();
-    }
-    return TimeOfDay.now().format(context).toString();
+   try{
+     TimeOfDay? t =
+     await showTimePicker(context: context, initialTime: TimeOfDay.now());
+     if (t == null) {
+       await MyToast.showErrorMsg("Pls Select time", context);
+     } else {
+       log("Chosen time: ${t.format(context)}");
+       return t.format(context).toString();
+     }
+     return TimeOfDay.now().format(context).toString();
+   }catch(e){
+     await MyToast.showErrorMsg(e.toString(), context);
+     throw Exception(e);
+   }
   }
 
 
@@ -219,19 +225,31 @@ class _ClassesCalendarState extends State<ClassesCalendar> {
         Consumer<ScheduleState>(builder: (_,scheduleService,__){
           return ElevatedButton(
             onPressed: () async {
-              if (classNameContr.toString().isNotEmpty) {
-                await scheduleService.addSchedule(Schedule(scheduled_class_name: classNameContr.text,scheduled_from: fromDateContr.text,scheduled_to: toDateContr.text,scheduled_date: formatDate(_focusedDay)));
+              // Check if class name, from time, and to time are selected
+              if (classNameContr.text.isEmpty) {
+                await MyToast.showErrorMsg("Class name cannot be empty", context);
+              } else if (fromDateContr.text.isEmpty) {
+                await MyToast.showErrorMsg("From time cannot be empty", context);
+              } else if (toDateContr.text.isEmpty) {
+                await MyToast.showErrorMsg("To time cannot be empty", context);
+              } else {
+                // If all fields are filled, add the schedule
+                await scheduleService.addSchedule(Schedule(
+                  scheduled_class_name: classNameContr.text,
+                  scheduled_from: fromDateContr.text,
+                  scheduled_to: toDateContr.text,
+                  scheduled_date: formatDate(_focusedDay),
+                ));
+                // Clear the fields after adding the schedule
                 classNameContr.clear();
                 fromDateContr.clear();
                 toDateContr.clear();
                 Navigator.of(context).pop();
-              } else {
-                await MyToast.showErrorMsg(
-                    "Class name cannot be empty", context);
               }
             },
             child: const Icon(Icons.add_box),
-          );
+          )
+          ;
         }),
       ],
     );
