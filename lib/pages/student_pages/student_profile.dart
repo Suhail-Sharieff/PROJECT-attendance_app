@@ -225,25 +225,46 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                               ],
                             ),
                           ),
-                          Consumer<AttendancePageState>(builder: (_,ser,__){
-                            Details? d=ser.map[student];
-                            return Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 4.0, 0.0, 0.0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Attended ${min(d!.nOfClassesAttended,d.nOfClassesTakenForHisClass)}/${d.nOfClassesTakenForHisClass} ',
+                          // Consumer<AttendancePageState>(builder: (_,ser,__){
+                          //   Details? d=ser.map[student];
+                          //   return Padding(
+                          //     padding: const EdgeInsetsDirectional.fromSTEB(
+                          //         0.0, 4.0, 0.0, 0.0),
+                          //     child: Column(
+                          //       children: [
+                          //         Text(
+                          //           'Attended ${min(d!.nOfClassesAttended,d.nOfClassesTakenForHisClass)}/${d.nOfClassesTakenForHisClass} ',
+                          //           style: const TextStyle(
+                          //             fontFamily: 'Inter',
+                          //             letterSpacing: 0.0,
+                          //             fontWeight: FontWeight.bold
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   );
+                          // }),
+                          Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                0.0, 4.0, 0.0, 0.0),
+                            child: Column(
+                              children: [
+                                FutureBuilder(future: classService.nOfClassesTakenFor(widget.hisClass), builder: (c,s){
+                                  if(s.connectionState==ConnectionState.waiting){
+                                    return const CircularProgressIndicator();
+                                  }
+                                  return Text(
+                                    'Attended ${min(student.nOfClassesAttended, s.data!)}/${s.data!} ',
                                     style: const TextStyle(
-                                      fontFamily: 'Inter',
-                                      letterSpacing: 0.0,
-                                      fontWeight: FontWeight.bold
+                                        fontFamily: 'Inter',
+                                        letterSpacing: 0.0,
+                                        fontWeight: FontWeight.bold
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
+                                  );
+                                }),
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     ),
