@@ -6,7 +6,6 @@ import 'package:attendance_app/Utils/toast.dart';
 import 'package:attendance_app/constants/Widgets/appBar.dart';
 import 'package:attendance_app/data/models/classes_model/classes_model.dart';
 import 'package:attendance_app/data/models/schedule_model/schedule.dart';
-import 'package:attendance_app/data/state/attendance_state.dart';
 import 'package:attendance_app/data/state/class_state.dart';
 import 'package:attendance_app/data/state/schedule_state.dart';
 import 'package:flutter/material.dart';

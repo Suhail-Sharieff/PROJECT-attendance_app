@@ -33,6 +33,8 @@ class AttendancePageState with ChangeNotifier {
       for (Map<String, dynamic> eachMap in attendanceHistory) {
         dates.add(eachMap[dateCol]);
       }
+      bool needed=await needToReset(student.className);
+
 
       map[student] = Details(
         name: student.name,
@@ -41,8 +43,10 @@ class AttendancePageState with ChangeNotifier {
         roll: student.roll,
         nOfClassesTakenForHisClass: nOFClassesTakenForHisClass,
         attendanceDatesList: dates,
-        isPresentToday: isPresentToday,
+        isPresentToday: (needed)?false:true,
       );
+
+
       // notifyListeners();
     }
   }
@@ -84,4 +88,26 @@ class AttendancePageState with ChangeNotifier {
     DateFormat formatter = DateFormat('dd/MM/yyyy');
     return formatter.format(now);
   }
+
+
+  Future<void>resetAttendance()async{
+
+  }
+
+
+ Future<bool>needToReset(String className)async{
+    bool needToReset=true;
+    for(var e in map.entries){
+      Details d=e.value;
+      Student s=e.key;
+      bool isPresentToday=await service.isPresentToday(s);
+      if(s.className==className && isPresentToday){
+        needToReset=false;
+      }
+    }
+    return needToReset;
+ }
+
 }
+
+
